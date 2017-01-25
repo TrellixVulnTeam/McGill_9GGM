@@ -1,0 +1,221 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{enumerate}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+\newcommand{\at}[2][]{#1|_{#2}} % evaluate at 
+
+
+%Math shortcuts
+\newcommand{\vout}{v\ft{out}}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math417}\\
+			\text{Mathematical Programming}\\
+			\vspace{0.5cm}
+			Homework VII
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			Tim Hoheisel
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	
+	\section{Nonsmooth Fermat's rule}
+	Let $f:\mathbb R ^n \rightarrow \mathbb R \cup \{+\infty\}$ and $\bar x \in \mathrm {dom} f$.\\
+	\underline{Claim}: $\bar x $ is a minimizer of f iff $0\in \partial f(\bar x)$, where the last expression denotes the subdifferential of f.
+	
+	\begin{align*}
+		\partial f(\bar x) &:= \{ v \in \mathbb R^n \vert f(x) \geq f(\bar x ) + \langle v,x-\bar x\rangle \}\\
+		0\in \partial f(\bar x) \iff f(x) &\geq f(\bar x) + \langle 0, x- \bar x \rangle = f(\bar x) \quad \forall  \quad x \in \mathrm{dom} f  
+	\end{align*} 
+	The last line completes the proof as this is the definition of a minimizer.
+	
+	\section{Convergence }
+	
+	We will first prove a theorem which is quite powerful in its own right. First let $\rho(A) $ denote the spectral radius of the matrix $A$ which means the following:
+	\begin{equation}
+		\rho (A) := \max \{\abs{\lambda_1},...,\abs{\lambda_n} \} 
+	\end{equation}
+	Where the lambdas designate the eigenvalues of the matrix A. \\
+	\underline{Claim}: Let $A\in \mathbb R ^n$ with spectral radio $\rho(A)$, then $\rho(A) < 1$ is a necessary and sufficient condition for $A^k \rightarrow 0$. \\
+	\underline{Proof}: Let $(v, \lambda)$ be a non trivial eigen pair.
+	\begin{align*}
+		\left(\lim\limits_{k\rightarrow \infty } A^k \right) v &= 0\\
+		 \lim\limits_{k\rightarrow \infty} (A^k v) &= 0\\
+		 \lim\limits_{k \rightarrow \infty} (\lambda^k v) &= 0\\
+		 v\lim\limits_{k\rightarrow \infty} (\lambda^k) &= 0\\
+		 \therefore \lim\limits_{k \rightarrow \infty} \lambda^k &=0
+	\end{align*}
+	Because we assumed $v$ was non zero. Moreover the last line implies $\abs \lambda < 1$ for all eigen values, which is what we set out to prove. (Notice we can read the reasoning in the other direction which means we also proved sufficiency).
+	\clearpage
+	We now prove another statement and those two together complete the proof.
+	\underline{Claim}: Let $A\in \mathbb R^n $ equipped with a consistent matrix norm $\rho(A) $, then 
+	\begin{equation}\label{desired}
+		\rho(A) \leq \norm{A^k}^{1/k} \quad \forall \, k \in \mathbb N
+	\end{equation}
+	\underline{Proof:} Once again let $(v,\lambda)$ be a non trivial eigen pair for a matrix A. We know the norm is submultiplicative:
+	\begin{equation}
+		\abs \lambda ^k \norm v = \norm{\lambda ^k v} \leq \norm{A^k} \cdot \norm v 
+	\end{equation}
+	And since we chose a non trivial pair ($v \neq 0$) and the norm of a vector is by definition 0 iff the vector is 0, we have
+	\begin{equation}\label{easy}
+		\abs{\lambda ^k} \leq \norm{A^k} \quad \forall \, k\in \mathbb N 
+	\end{equation}
+	and for all eigen values. Now \ref{easy} easily yields the desired inequality \ref{desired}.
+	
+	We now prove the original claim using the sub-multiplicativity of the norm: 
+	\begin{equation}
+		\lim\limits_{k\rightarrow \infty} \norm A ^k = 0 \quad \Rightarrow \quad  \lim\limits_{k\rightarrow \infty} \norm {A^k} = 0 \quad \Rightarrow \quad \lim\limits_{k\rightarrow \infty } \rho(A)^k = 0  
+	\end{equation}
+	The last equality implies that the spectral radius is less than 1. We can now finally invoke the first claim we made to conclude that necessarily $A^k \rightarrow 0$ which concludes the proof.\\
+	$\blacksquare$
+	\clearpage
+	\section{Operator Norms}
+	Let $\norm{\cdot}_X$ and $\norm{\cdot}_Y$ be vector norms on $X:= \mathbb R^n $ and $Y:= \mathbb R^m$ respectively. We wish to show  that the operator norm as defined in class is indeed a norm. This means we wish to show that the mapping is absolutely homogeneous, that it respects the triangle inequality and maps 0 to and only to 0. Let the operator norm be defined as follows:
+	\begin{equation}
+		A\in R^{m\times n} \mapsto \sup \frac{\norm{Ax}_Y}{\norm{x}_X}
+	\end{equation}
+	We assume the norm of $x$ is not zero when we are supping throughtout this section for latex speed reasons. For the absolute homogeneous property it is a pretty direct consequence of vector norm and sup basic properties.
+	\begin{equation}
+		\sup \frac{\norm{\alpha Ax}_Y}{\norm{x}_X} = \sup \frac{\abs \alpha \norm{ Ax}_Y}{\norm{x}_X} = \abs \alpha\sup \frac{\norm{ Ax}_Y}{\norm{x}_X} \quad \checkmark
+	\end{equation}
+	We now verify the triangle inequality which is again a basic result of norm and sup basic properties:
+	\begin{equation}
+		\norm{A+B} = \sup \frac{\norm{(A+B)x}_Y}{\norm{x}_X} \leq \sup  \frac{\norm{ Ax}_Y}{\norm{x}_X} + \sup \frac{\norm{Bx}_Y}{\norm{x}_X} = \norm A + \norm B \quad \checkmark
+	\end{equation}
+	 Finally it is clear to see that any matrix maps 0 to 0 and that supping over $0$ gives us $0$ so we have now all the basic properties of a well defined norm. \\
+	 We now wish to show that the norm could be defined as supping the norm of the matrix product over the unit ball and and also restrict it over its closure. We start by proving one of the claims and adding an obvious inequality:
+	 \begin{equation*}
+	 	\sup \frac{\norm{Ax}_Y}{\norm{x}_X} = \sup \norm{A \, \,  \frac{x}{\norm{x}_X}} = \sup_{\norm x_X = 1} \norm{Ax}_Y \leq \sup_{\norm x_X \leq 1} \norm{Ax}_Y
+	 \end{equation*}
+	 Moreover:
+	 \begin{equation}
+	 	\sup_{\norm x_X \leq 1} \norm{Ax}_Y \leq \sup_{\norm x_X \leq 1} \frac{\norm{Ax}}{\norm{x}_X} = \sup \norm{A \, \,  \frac{x}{\norm{x}_X}} = \sup_{\norm\xi = 1} \norm{A\xi }
+	 \end{equation}
+	 This inequality with the one derived previously shows that equality holds.\\
+	 $\blacksquare$
+	 
+	\clearpage
+	
+	\section{Operator 1-norm}
+	
+	Let $A\in \mathbb R^{m\times n}$, we wish to show that 
+	\begin{equation}\label{claim}
+		\norm A_1 = \max_{j=1,\ldots, n } \sum_{i=1}^{m}\abs{a_{ij}}
+	\end{equation}
+	We will derive the norm, also using the result from the previous exercise:
+	\begin{align}
+		\norm{Ax}_1 &= \sup_{\norm x_1 = 1}  \, \sum_{i=1}^{m}\left \vert\sum_{j=1}^{n}a_{ij}x_j \right \vert\\[2ex]
+	\sum_{i=1}^{m}\left \vert\sum_{j=1}^{n}a_{ij}x_j \right \vert	&\leq \sum_{i=1}^{m} \sum_{j=1}^{n} \abs{a_{ij}x_j}\\[2ex]
+		&= \sum_{j=1}^{n}\abs{x_j} \sum_{i=1}^{m}\abs{a_{ij}}
+	\end{align}
+	
+	Now let $A_j = \sum_{i=1}^{m}\abs{a_{ij}}$ and take its argmax over the indices to be $J$. In other words, the columns with the highest 1-norm. We then have the obvious inequality:
+	\begin{equation}
+		\norm{Ax}_1 \leq A_J\sum_{j=1}^{n} \abs{x_j} = A_J \norm{x}_1
+	\end{equation}
+	Where the last equality is simply by the definition of the 1-norm of a vector. This last line gives us the following inequality:
+	\begin{align}
+		\sup_{\norm x_1 = 1} \norm {Ax}_1 \leq \sup_{\norm x_1 = 1} A_J \norm x_1 =  A_J
+	\end{align}
+	We finally get the desired inequality
+	\begin{equation}
+		\norm{A}_1 \leq A_J
+	\end{equation}
+	But $A_J$ exists and is exactly the RHS of \ref{claim}, which completes the proof.\\
+	$\blacksquare$
+	
+	\clearpage
+	
+	\section{Local Lipschitz continuity of smooth functions}
+	Let $G \, : \, \mathbb R^n \rightarrow \mathbb R^m $ be continuously differentiable. Show that $G$ is locally Lipschitz continuous at every point $\bar x \in \mathbb R^n$. We first observe that while global Lipschitz continuity is a strong condition, local Lipschitz continuity merely means that the rate of change is bounded everywhere, which means that the second derivatives exist and are bounded which is equivalent to saying the function is continuously differentiable. To do the actual formal proof we first prove the following:\\
+	\\
+	\underline{Claim}: Let $G$ be defined as above and continuously differentiable, then there exists a neighbordhood about every point in $\mathbb R^n$ such that the Jacobian is bounded, i.e. its norm is bounded. We will just prove the statement for the spectral norm.\\
+	\\
+	\underline{Proof}: Let $J(x)$, $\rho(A)$ denote the jacobian of G and the spectral radius of $A$ respectively. Since $G(x)$ is continuously differentiable $D_j f_i(x)$ is differentiable for all $i = 1,\ldots, m$ and $j = 1,\ldots,n$. Moreover we know from basic real analysis that linear combinations of differentiable functions are differentiable. Let $A = (J\tran J)(x)$. By the above statement all the entries of A are differentiable. Let $B_\epsilon (\bar x)$ be an open ball centered at $\bar x$ and take $L^2$ to be the maximum value that $\rho(A)$ takes over that neighborhood. Formally let
+	\begin{equation}\label{defineL}
+		L^2 = \max\{\rho(A(x)) \, \vert \, x \in B_\epsilon (\bar x) \}
+	\end{equation}
+	Clearly $L^2 \neq \pm \infty$ since $A(x)\vert_{\hat x }$ is a matrix with real entries for all $\hat x \in B_\epsilon (\bar x)$. Now since $\norm A_2$ can be shown as in class to be $\sqrt{\rho(A)}$ we have proven the claim which we state formally:
+	\begin{equation}\label{bounded}
+		\forall \bar x \in \mathbb{R}^n \quad \exists \quad \epsilon >0 \quad \text{and} \quad L\in \mathbb R \quad   \text{s.t.} \quad \norm A_2 \leq  L \quad \forall x\in B_\epsilon(\bar x)
+	\end{equation}
+	Moreover $L$ is defined by \ref{defineL} and is clearly the least upper bound. 
+	Now let $a,b \in B_\epsilon(\bar x)$. An open ball is a convex set so it contains all its inner convex combinations. Let us define the following parametrized curve:
+	\begin{equation}\label{curve}
+		\phi(t) : = G(a + \lambda (b-a)) \quad \lambda \in [0,1]
+	\end{equation}
+	By convexity the curve lies entirely in $B_\epsilon(\bar x )$. 
+	\begin{equation*}
+		G(b) - G(a) = \phi(1) - \phi(0) = \int_{0}^{1} \phi'(t) dt = \int_{0}^{1} dG(a+ \lambda(b-a)) \cdot (b-a)dt
+	\end{equation*}
+	Where the last equality is due to the chain rule. 
+	\clearpage 
+	Now using the triangle inequality for integrals, the bound from \ref{bounded} and the fact that the curve is entirely in $B_\epsilon (\bar x)$ we have:
+	\begin{align}
+		\abs{G(b) - G(a)} &= \left \vert  \int_{0}^{1}  dG(a+ \lambda(b-a)) \cdot (b-a)dt  \right \vert  \\[2ex]
+		&\leq \int_{0}^{1}  \vert dG(a+ \lambda(b-a)) \cdot (b-a) \vert dt\\[2ex]
+		&\leq  \int_{0}^{1} L \abs{b-a}\\[2ex]
+		&=  L \abs{b-a}
+	\end{align}
+	Which proves local Lipschitz continuity.\\
+	$\blacksquare$\\
+	Now I'd like to thank my manager, my family, my friends, all those people that have made this possible to happen, the crowd at stackexchange, let's not forget them, this is incredible, I never thought I'd come this far, just goes to remind you everything is possible! life is but a dream, but \\[3ex]
+	\textit{--In the end,\\
+		 the water was too cold for us} \\[2ex]
+	\hspace{1cm} -Robert Lowell
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+\end{document}

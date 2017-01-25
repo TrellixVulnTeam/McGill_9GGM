@@ -1,0 +1,257 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[english]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+
+
+
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+\newcommand{\trace}{\mathrm{trace}}
+
+
+
+\begin{document}
+
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math 423}\\
+			\text{Linear Regression}\\
+			\vspace{0.5cm}
+			Homework IV
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			David A. Stephens
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+
+\section*{1}
+\subsection*{a}
+
+
+
+
+<<cache = TRUE>>=
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+testScores = read.csv("TestScores.csv",header=TRUE)
+testScores$Faculty = as.factor(testScores$Faculty)
+yT = testScores$Score
+faculty = testScores$Faculty
+@
+
+
+
+Now that we have converted the qualitative data's class into factors we can fit the model using lm. This is a model with only one predictor with three levels. Moreover we directly sum up the results in a boxplot to get an idea of the fit by quick inspection.
+
+<<cache = TRUE,tidy = TRUE, fig.height= 5>>=
+fit.yT = lm(yT ~ faculty);
+clrs = c('red','blue','green')
+boxplot(residuals(fit.yT)~faculty,vertical = TRUE, col = clrs)
+@
+
+
+
+From the onset we see that there is a wide disparity of variance between the first two faculties and the third. This is especially true when compared with the means. To take at closer look at the situation let's run an anova
+
+<<>>=
+anova(fit.yT)
+@
+We get a very small p-value for the regression so we conclude there is a statistically significant difference between test score for students from the 3 different faculties. 
+
+<<>>=
+library(lsmeans)
+means.yT = lsmeans(fit.yT, ~ faculty)
+print(means.yT)
+@
+The means of the test scores of students in differentiated by faculty and their respective standard
+errors are displayed above. The means with their standard errors beeing in the second and third columns respectively.
+\clearpage
+\section*{2}
+\subsection*{a}
+As for the preceding section the first thing we do is import the data and format it appropriately
+<<>>=
+filter = read.csv("Filter.csv")
+filter$carsize = as.factor(filter$carsize)
+filter$type = as.factor(filter$type)
+yF = filter$noise
+type = filter$type
+carsize = filter$carsize
+@
+
+Now we have 2 predictors and we want to fit the five possible models as liste in page 1. We have to type of predictors; factor predictors and interactions of factor predictors. Consequently interactions are counted as predictors in their own right. So a model with two predictors and their interaction has 4 parameters including the intercept. We now fit the 5 possible models 
+
+<<>>=
+fit.nothing = lm(yF ~ 1)
+fit.carsize = lm(yF ~ carsize, data = filter)
+fit.type = lm(yF ~ type)
+fit.both = lm(yF ~ carsize + type)
+fit.interaction = lm(yF ~ carsize + type +carsize:type)
+@
+To have a table displaying the residual sum of squares of the 5 different models and the number of parameters for each model we can simply call the anova function with the models as arguments to get in one function call all the SSres.
+\clearpage
+<<>>=
+a.1 = anova(fit.nothing,fit.type, fit.carsize, fit.both, fit.interaction)
+print(a.1)
+@
+\begin{table}[htbp!]
+		\begin{center}
+			\begin{tabular}{| c | c | c |}
+			\hline Model & $SS_{res}$ & p	\\
+			\hline 1 & \Sexpr{a.1[1,2]}  & 1\\
+			\hline 1 + type & \Sexpr{a.1[2,2]} & 2\\
+			\hline 1 + carsize & \Sexpr{a.1[3,2]} & 3\\
+			\hline 1 + type + carsize & \Sexpr{a.1[4,2]} & 4\\
+			\hline 1 + type + carsize + type*carsize & \Sexpr{a.1[5,2]}& 6\\
+			\hline	
+			\end{tabular}
+	\end{center}
+\end{table}
+
+\clearpage
+
+\subsection*{b}
+We now compare the "reduced" model which only considers the predictor "carsize" to the one that also includes the "type" predictor. When we include the main effect of a predictor we include all possible interactions as standard practice as to not make arbitrarily determined levels relevant (also vice-versa).
+<<>>=
+a.2 = anova(fit.carsize,fit.interaction)
+print(a.2)
+@
+Now to compute manually the p value of the partial F test we need to determine the degrees of freedom of the numerator (r) and the denominator(n-p). For the full model we have to two type of parameters; $p_1 =M_{carsize} + M_{type} - 1 = 3 + 2 - 1 = 4$ for the main effects and $p_2 = (M_{carsize} -1) (M_{type} - 1) = 2$ for the interections. Adding up we get $p = p_1 + p_2 = 6$. The reduced model has one factor variable with 3 levels so 3 parameters. The difference in both is 3 so $r = 3$ and 
+<<>>=
+r = 3
+n = 36
+p = 6
+df1 =r
+df2 = n-p
+num1 = sum(residuals(fit.carsize)^2)/ df1
+num2 = sum(residuals(fit.interaction)^2) / df1 
+num = num1 - num2
+den=  (sum(residuals(fit.interaction)^2)/(df2))
+f_stat = num/den
+p_value = 1 - pf(f_stat,df1,df2)
+print(f_stat)
+print(p_value)
+@
+
+\clearpage
+
+\section*{3}
+
+To evaluate the effect of having surgery on patient satisfaction we have to also consider the rest of the data. We want to build an adequate model for patient satisfaction in a hospital. We have four possible predictors, all of them continuous except one; a factor predictor. The factor predictor has two levels indicating if the patient has had surgery or not. We start by looking at a full additive model
+<<>>=
+library(car)
+pat = read.csv("PatSat.csv", header = TRUE)
+pat$Surgery = as.factor(pat$Surgery)
+y = pat$Satisfaction
+age = pat$Age
+sev = pat$Severity
+sur = pat$Surgery
+anx = pat$Anxiety
+fit.add = lm(y ~ age + sev + sur + anx)
+vif(fit.add)
+@
+
+<<>>=
+summary(fit.add)
+@
+\clearpage
+We achieve with this model a reasonable although not very high adjusted R-squared value. Now we want to scale back; the main effects of the variables Surgery and Anxiety appear to not be significant in this model before considering interactions. Moreoever we are lucky in that the predictor \textit surgery has a very low VIF  so multicollinearity will not be a major problem in evaluating if surgery affects patient satisfaction. We decide to start with a model containing only the main effects of age and severity.
+
+
+<<>>=
+fit.ageSeverity = lm(y ~ age + sev)
+summary(fit.ageSeverity)
+@
+First we notice that our R-squared values has augmented though very midly while the standard R squared value is almost the same. We look for further simplification:
+<<>>=
+drop1(fit.ageSeverity, test = "F")
+@
+The F-test indicates we cannot simplify this model further according to our choice of Fout (4)
+We now look at possible interactions between the two predictors. We again follow the rule that all main effects have to be included whenever we consider interactions. 
+<<>>=
+fit.ageSeverity_int = lm(y ~ age + sev + age:sev)
+anova(fit.ageSeverity, fit.ageSeverity_int)
+@
+We don't need any further analysis to see that the added interaction term doesn't add any statistical significane to the model.Nevertheless we want to look at all possible interactions of the second order and compare them. To the model that only considers the main effects of age and severity (the "best" one so far).
+\clearpage
+<<>>=
+fit.allSecond = lm(y ~ age*(sev + anx + sur))
+summary(fit.allSecond)
+@
+\clearpage
+<<>>=
+fit.foward = update(fit.ageSeverity, ~. + sur)
+summary(fit.foward)
+@
+The last p-value strongly discourages us from rejecting the null hypothesis. We thus conclude that from the data available having had surgery or not does not seem to significantly affect a patient's satisfaction. At the very least not in way that could be detected through a mean model with all the regular assumptions underlying linear regression. (PS: an anova call wasn't necessary as the test is included in the summary). Also a backwards elimination at the next optional section gives us more confidence in our results.
+
+\clearpage
+
+\section*{More careful Version}
+
+We start by looking at a full model and looking for simplifications. We choose a Fout of 4 and start carefully by removing interactions. 
+<<>>=
+library(car)
+pat = read.csv("PatSat.csv", header = TRUE)
+pat$Surgery = as.factor(pat$Surgery)
+y = pat$Satisfaction
+age = pat$Age
+sev = pat$Severity
+sur = pat$Surgery
+anx = pat$Anxiety
+fit.full = lm(y ~ age*sev*sur*anx)
+drop1(fit.full, test = "F")
+fit.back1 = update(fit.full, ~. -anx:sev:age:sur)
+drop1(fit.back1, test = "F")
+@
+\clearpage
+<<tidy = T>>=
+fit.back2 = update(fit.back1, ~. - age:sev:sur - age:sev:anx - age:sur:anx - sev:sur:anx)
+drop1(fit.back2,test = "F")
+@
+<<tidy = T>>=
+fit.back3 = update(fit.back2, ~. -age:sev - age:sur - sev:sur  - age:anx - sev:anx - sur:anx)
+drop1(fit.back3, test = "F")
+@
+
+\clearpage
+<<>>=
+summary(fit.full,test = "F")
+@
+\clearpage
+
+
+
+
+
+
+
+
+
+\end{document}

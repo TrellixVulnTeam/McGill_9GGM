@@ -1,0 +1,88 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+
+\setlength{\jot}{10pt}
+
+
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math 316}\\
+			\text{Complex Variables}\\
+			\vspace{0.5cm}
+			Homework I
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			John Toth
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	
+	\section{}
+	\subsection{}
+	To prove that a function is holomorphic we keep in mind that products and sums, products and quotients of holomorphic functions are construct holomorphic functions (provided that there is no division by zero)\\[2ex]
+	a)
+		\begin{equation*}
+		f(z) = \sin(z) - \frac{z^2}{z+1}
+	\end{equation*}
+	$\sin(z)$ is a trigonometric function so it is holomorphic, $z^2$ and $z+1$ are both polynomials and so are holomorphic, therefore their quotient is holomorphic therefore the sum of the two parts is holomorphic when $z \neq -1$\\[2ex]
+	c) 
+		\begin{equation*}
+			h(z) = \frac{\cos(z)}{z^2 + 1}
+		\end{equation*}
+	$\cos(z)$ is a trigonometric function so it is homomorphic, $z^2 +1 $ is a polynomial is z so it is holomorphic. Their quotient is therefore holomorphic when $z \neq i ,-i$\\[2ex]
+	\subsection{}
+	
+		\begin{align*}
+			g(z) &= \frac{\bar{z}}{z^2+1} = \frac{x-iy}{x^2 -i2xy + 2} = \frac{(x-iy)(x^2+2 +i2xy)}{(x^2+2 )^2 + 4x^2y^2}\\
+			u(x,y) &= \frac{x^3 +2x + 2xy^2}{(x^2+2 )^2 + 4x^2y^2}\\
+			v(x,y) &= \frac{-x^2y -2y +2x^2y}{(x^2+2 )^2 + 4x^2y^2}
+		\end{align*}
+		Both $u(x,y)$ and $v(x,y)$ have the same denominator so let's just examine their numerator, say $n_u(x,y)$ and $n_v(x,y)$
+		\begin{align*}
+			\frac{\partial n_u(x,y)}{den}
+		\end{align*}
+	
+\clearpage
+\section{dump}
+	
+	
+	
+	
+	
+\end{document}

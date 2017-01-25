@@ -1,0 +1,206 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[english]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+
+
+
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+\newcommand{\trace}{\mathrm{trace}}
+
+
+
+\begin{document}
+
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math 423}\\
+			\text{Linear Regression}\\
+			\vspace{0.5cm}
+			Final Project
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			David A. Stephens
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+
+\section*{Introduction}
+
+The course MATH423 could be said to culminate in a concise introduction to different approches to effective statistical model building, generally restricted to multiple linear regression under standard assumptions. In this final project we use data from a large ongoing survey in the United States which provides real publicly available data. Using this data, we have attempted to build a suitable model to represent the variation in blood pressure in terms of the other available potential predictors. Moreover we have focussed on data from the 2011-2012 year. The data on blood pressure was stored in two different variables. They are named "bpdia" and "bpsys" which stands for diastolic and systolic blood pressure. They measure in mm Hg the blood pressure when the heart muscle is contracting and when it is relaxed respectively.
+<<cache = TRUE>>=
+library(pander)
+library(xtable)
+library("NHANES")
+library(car)
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+survey = read.csv("nhanes-sub.csv",header = TRUE)
+@
+
+\clearpage
+
+\section{Data inspection and pre-processing}
+
+We first start by inspecting the data and pre-process it so we can apply the regular techniques of model building and standard regression functions available in R. We get rid of the identifiers for the regression as they clearly by definition not predictors. Moreover we remove the column "year" from the dataframe as the sample is only concerned with one of those years; a factor variable with only one variable beeing completely useless in regression analysis as well. We also decide to scale the data because of the large different in scale between different potential predictors. Moreover the intercept makes more sense for scaled data when dealing with obviously non-negative data which is clearly in a certain range as it indicated conditional expected value for $x_i = \mu _i$ and not $x_i = 0$. The latter beeing quite meaningless for height or blood pressure. 
+
+<<preprocessing>>=
+isFact <- sapply(survey, is.factor)
+survey[isFact] = lapply(survey[isFact],factor)
+survey = survey[, names(survey) != "year"] 
+unwantedCols = c("bpdia","X","id")
+isNum <- sapply(survey, is.numeric)
+survey[isNum] <- lapply(survey[isNum], scale)
+@
+There are two variables dealing with race which differ only in the levels available, the race3 one having more levels. If we were to select one as a predictor, it is obvious the other one should not be found in the model.
+
+\clearpage
+
+
+
+
+\section{Diastolic blood pressure}
+
+<<tidy = TRUE>>=
+coln = colnames(survey)
+f <- as.formula(paste("bpdia ~", paste(coln[!coln %in% unwantedCols], collapse='+')))
+fit.fullAdd = lm(f, survey)
+fit.fpredictors_T = as.data.frame(summary(fit.fullAdd)$coefficients)
+@
+
+<<results="asis", warning= F, message= F>>=
+library(xtable)
+xtable(fit.fpredictors_T[fit.fpredictors_T$`Pr(>|t|)`>0.5,])
+@
+
+<<results="asis", warning= F, message= F>>=
+xtable(fit.fpredictors_T[fit.fpredictors_T$`Pr(>|t|)`<0.05,])
+@
+\clearpage
+
+<<>>=
+fit.1 = lm(bpdia ~ bpsys+totchol,survey)
+fit.2 = lm(bpdia ~ bpsys*totchol,survey)
+anova(fit.1,fit.2)
+fit.3 = lm(bpdia ~ bpsys + totchol + pulse + age, survey)
+anova(fit.1,fit.3)
+fit.4 = lm(bpdia ~ bpsys*totchol*pulse*age,survey)
+anova(fit.3,fit.4)
+fit.5 = update(fit.4, ~. + weight + bmi + hhinc + poverty)
+@
+\clearpage
+
+Before adding any more variables we look at plausible multicollinearity.
+<<>>=
+library(car)
+inflation = as.data.frame(vif(fit.5))
+inflation[inflation[,"GVIF"] > 2,]
+fit.rem_1_1 = update(fit.5, ~. - weight)
+fit.rem_1_2 = update(fit.5, ~. - bmi)
+fit.rem_1_3 = update(fit.5, ~.  - hhinc)
+fit.rem_1_4 = update(fit.5, ~. - poverty)
+predictors_1_1 = as.data.frame(summary(fit.rem_1_1)$coefficients)
+predictors_1_2 = as.data.frame(summary(fit.rem_1_2)$coefficients)
+predictors_1_3 = as.data.frame(summary(fit.rem_1_3)$coefficients)
+predictors_1_4 = as.data.frame(summary(fit.rem_1_4)$coefficients)
+predictors_1_1["bmi",]
+predictors_1_2["weight",]
+predictors_1_3["poverty",]
+predictors_1_4[grep('^hhinc',rownames(predictors_1_4)),]
+@
+\clearpage
+
+
+We have looked at the full additive model first. Then we chose the six predictors which were the most significant according to the t test values. We inspected the coefficients with both high and low p values and found that hhinc had levels in the two extreme categories. Moreover we supposed there should be some multicollinearity between house hold income and the poverty index and bmi and weight. We confirmed this by fitting both and then looking at the VIF. At the same time we actually checked multicollinearity in the rest of the model too. The test reveled that there was indeed heavy multicollinearity between hhinc and poverty but not in the rest. Moreover hhinc is a binned predictor whereas poverty is a continuous variable. As we don't have a solid grasp of binning we were naturally inclined to choose poverty over hhinc. Finally poverty seemed by a simple anova to have slightly more predictive power. The thus chosen main variables were our basis for foward selection. We then added interactions iteratively and ended up including all of them.
+
+<<>>=
+fit.4_int = lm(bpdia ~weight*poverty*bpsys*totchol*pulse*age,survey)
+s = step(fit.4_int,direction="backward")
+tail(s$coefficients,2)
+fit.5 = lm(bpdia ~ weight*poverty*bpsys*totchol*pulse*age,survey)
+@
+Since we had only 6 variables at this point we were able to use the function step to find the best model according to AIC values amongst all the models with those 6 predictors. This model turns out to have high order interactions and so we refrained from trying to add them "manually" one by one and concluded that the model with all interactions was the best one achievable "manually" for those 6 variables. 
+
+\clearpage
+
+\section{Systolic Blood Pressure}
+
+<<tidy = TRUE>>=
+coln = colnames(survey)
+unwantedCols = c("bpsys","X","id")
+f <- as.formula(paste("bpsys ~", paste(coln[!coln %in% unwantedCols], collapse='+')))
+fit.fullAdd = lm(f, survey)
+fit.fpredictors_T = as.data.frame(summary(fit.fullAdd)$coefficients)
+@
+
+<<results="asis", warning= F, message= F>>=
+library(xtable)
+xtable(fit.fpredictors_T[fit.fpredictors_T$`Pr(>|t|)`>0.5,])
+@
+
+<<results="asis", warning= F, message= F>>=
+xtable(fit.fpredictors_T[fit.fpredictors_T$`Pr(>|t|)`<0.02,])
+@
+\clearpage
+
+<<>>=
+fit.11 = lm(bpsys ~ bpdia+age+gender,survey)
+fit.21 = lm(bpsys ~ bpdia*age*gender,survey)
+anova(fit.11,fit.21)
+fit.31 = update(fit.21, ~. + alcyear + alcday + bmi)
+@
+
+
+Before adding any more variables we look at plausible multicollinearity.
+<<>>=
+library(car)
+inflation = as.data.frame(vif(fit.11))
+inflation
+inflation = as.data.frame((vif(lm(bpsys ~ alcyear + alcday,survey))))
+inflation
+fit.41 = lm(bpsys ~ bpdia*age*gender*alcyear*alcday*bmi,survey)
+anova(fit.31,fit.41)
+s = step(fit.41,direction = "backward")
+tail(s$coefficients,1)
+@
+The procedure was the same as the one outlined for diastolic pressure but multicollinearity was not a potential issue this time. Once again the best model was found to be the one with all the possible interactions of the predictors with the biggest main effect.
+
+\clearpage
+
+\section*{Conclusion}
+
+We have tried to find by model building techniques seen in class the "best" linear model to describe the response variables diastolic and systolic blood pressure with the data from "NHANES"  in the 2010-2011 year. In both cases we started by adding the main effects of the most powerful predictors and then looking at possible interactions. We ended up adding all the interactions between the 6 most powerful predictors. Throughout the procedure we checked for multicollinearity. It was detected between the pairs bmi and weight and poverty and household income which sounded very reasonable. In this respect we only included one of those when they were both powerful. However we did not find multicollinearity between alcohol consumption as measured by year or by day to be a problem and added both to the second model. We confirmed the validity of those two models by automatic backward elimination with the function "step". This latter finds the best possible model according to AIC values between all possible models (i.e. linear regressions based on all possible subsets of the set of all interactions between main effects.) This indicated that including the interactions was a good choice as the AIC includes a penalty for over fitting. However this is an approach closer to data mining than actual statistical model building. To build a good model one should be informed by theoretical knowledge in order to explore possible interactions. We did not have that knowledge and therefore chose to include all the terms which might violate the principle of parsimony. We did not find this to be a major issue for the number of predictors we had (6), the resulting models weren't complicated to an absurd extent.
+
+
+
+\clearpage
+
+
+
+
+\end{document}

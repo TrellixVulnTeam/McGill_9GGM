@@ -1,0 +1,204 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[english]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+
+
+
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+\newcommand{\trace}{\mathrm{trace}}
+
+\begin{document}
+
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math 423}\\
+			\text{Linear Regression}\\
+			\vspace{0.5cm}
+			Homework III
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			David A. Stephens
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	
+\section*{a}
+
+
+
+<<cache = TRUE>>=
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+smoke<-read.csv("data.csv",header=TRUE)
+regressors = smoke[,1:ncol(smoke)-1]
+
+CO = smoke$CO
+tar = smoke$TAR
+nico = smoke$NICOTINE
+weight = smoke$WEIGHT
+k = dim(regressors)[2]
+n = dim(smoke)[1]
+X = cbind(rep(1,n),regressors)
+y = smoke[ncol(smoke)]
+Xcs = scale(regressors,center = TRUE, scale = TRUE)
+Xc = scale(regressors,center = TRUE, scale = FALSE)
+@
+
+<<cache = TRUE>>=
+fit.full = lm(CO ~ tar + nico + weight)
+anova.full = anova(fit.full)
+m.full = summary(fit.full)
+SSres.full = (m.full$sigma)^2 * (m.full$df[2]) 
+SSres.full_2 = sum(residuals(fit.full)^2)
+MSres = sqrt(SSres.full/(n - k)) 
+beta.0 = coefficients(fit.full)[1]
+beta.1 = coefficients(fit.full)[2]
+beta.2 = coefficients(fit.full)[3]
+beta.3 = coefficients(fit.full)[4]
+BigBeta = coefficients(fit.full)
+@
+
+\begin{equation}
+  SS_{Res}(\beta_0,\beta_1,\beta_2,\beta_3) = \Sexpr{SSres.full}
+\end{equation}
+
+\section*{b}
+
+<<>>=
+fit.noWeight = lm(CO ~tar + nico)
+m.NoWeight = summary(fit.noWeight)
+SSres.noWeight = sum(residuals(fit.noWeight)^2)
+@
+
+\begin{equation}
+  SS_{Res}(\beta_0,\beta_1,\beta_2) = \Sexpr{SSres.noWeight}
+\end{equation}
+
+\clearpage
+
+\section*{c}
+
+The corresponding f-statistic is 
+\begin{equation}
+F_3 = \frac{SS_R (\beta_3 \vert \beta_2,\beta_1,\beta_0)}{MS_{res}}
+\end{equation}
+
+<<>>=
+f3 = anova.full[3,4] #directly from anova table
+f3_2 = (SSres.noWeight - SSres.full)/(SSres.full / (n-k-1))
+f3_3 = anova.full[3,2]/(SSres.full / (n-k)) 
+
+f3
+f3_2
+f3_3
+@
+
+
+\clearpage
+
+\section*{d}
+
+<<>>=
+fit.full_backwards = lm(CO ~ weight + nico + tar)
+anova.full_backwards = anova(fit.full_backwards)
+anova.full_backwards
+@
+We have 
+
+\begin{align}
+\overline{SS}_R (\beta_3 \vert \beta_0) &= \Sexpr{anova.full_backwards[1,2]}\\
+\overline{SS}_R (\beta_2 \vert \beta_0, \beta_3) &= \Sexpr{anova.full_backwards[2,2]}\\
+\overline{SS}_R (\beta_1 \vert \beta_0, \beta_3, \beta_2) &= \Sexpr{anova.full_backwards[3,2]}
+\end{align}
+
+\clearpage
+
+\section*{e}
+
+<<>>=
+anova.reduced = anova(fit.noWeight)
+anova.reduced
+@
+
+We have 
+
+\begin{align}
+\overline{SS}_R (\beta_1 \vert \beta_0) &= \Sexpr{anova.reduced[1,2]}\\
+\overline{SS}_R (\beta_2 \vert \beta_0, \beta_1) &= \Sexpr{anova.reduced[2,2]}
+\end{align}
+
+\section*{f}
+
+<<>>=
+anova.noWeight = anova(fit.noWeight)
+anova.noWeight
+@
+
+\begin{equation}
+F_2 = \Sexpr{anova.noWeight[2,4]}
+\end{equation}
+
+\clearpage
+
+\section*{g}
+
+We want to know if regressing the CO value against tar and nicotine is better than no regressing at all. 
+
+<<>>=
+fit.nothing = lm(CO ~ 1)
+anova.nothing = anova(fit.nothing)
+SSres.nothing = anova.nothing[1,2]
+r = 2
+f_last = ((SSres.nothing - SSres.noWeight) / r) /
+          (SSres.noWeight/(n-k-r))
+f_last
+@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+ 
+
+
+\end{document}

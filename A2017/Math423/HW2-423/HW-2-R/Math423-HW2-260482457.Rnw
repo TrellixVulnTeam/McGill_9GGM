@@ -1,0 +1,275 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[english]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+
+
+
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+\newcommand{\trace}{\mathrm{trace}}
+
+\begin{document}
+
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math 423}\\
+			\text{Linear Regression}\\
+			\vspace{0.5cm}
+			Homework II
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			David A. Stephens
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	
+\section*{a}
+
+
+
+<<cache = TRUE>>=
+require(printr)
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+salary<-read.csv("salary.csv",header=TRUE)
+x1<-salary$SPENDING/1000
+y<-salary$SALARY
+@
+we want to estimate the parameter $\beta_1$ and $\beta_0$, namely the slope and the intercept. We use the least square estimators. This is a case of simple linear regression so we can use the following equations:
+\begin{equation} \hat\beta_1 = \frac{S_{xx}}{S_{xy}} \end{equation}
+
+\begin{align} S_{xx}  &= \sum_{i=1}^{n}(x_i - \bar x)^2\\[2ex]
+S_{xy} &= \sum_{i=1}^{n}y_i(x_i-\hat x) 
+\end{align}\\[1ex]
+
+\begin{equation} \hat\beta_0 = \bar y - \hat\beta_1 \hat x \end{equation}
+
+<<cache = TRUE>>=
+xbar = mean(x1)
+ybar = mean(y)
+Sxx = sum((x1 - xbar)^2)
+Sxy = sum(y*(x1 - xbar))
+slope = Sxy/Sxx
+intercept = ybar - slope*xbar
+print(slope)
+print(intercept)
+fit.RP1 = lm(y~x1)
+print(coef(fit.RP1))
+@
+
+\clearpage
+
+\section*{b and c}
+
+The residual standard error is given by 
+\begin{equation} \hat \sigma ^2 = \frac{SS_{\mathrm{Res}}}{n-2} \end{equation}
+Moreover$SS_{\mathrm{Res}}$ is the sum of squares of error:
+
+\begin{align}
+SS_{\mathrm{Res}} = \sum_{i=1}^{n}(y_i - \hat y_i)^2 = \sum_{i=1}^{n}y_i^2 - n\hat y ^2 - \hat\beta_1 S_{xy}\\
+= \sum_{i=1}^{n} (y_i - \bar y)^2  - \hat\beta_1 S_{xy}
+\end{align}
+
+<<cache = TRUE>>=
+SSRes = sum((y - ybar)^2) - slope*Sxy
+n = length(x1)
+residualStdError = sqrt(SSRes/(n-2))
+print(residualStdError)
+@
+
+\section*{d}
+
+We wish to compute the standard error with the values in the table already given. This table gives us the degrees of freedom (49) and the t value. 
+\begin{equation} t_0 = \frac{\hat\beta_0}{\mathrm{se}(\hat\beta_0)} \Rightarrow 
+\mathrm{se}(\hat\beta_0) = \frac{\hat\beta_0}{t_0} = \frac{12129.4}{10.13}  \end{equation}
+
+Now to do the computation directly from the data we use the actual formula for the standard error which is given by
+\begin{equation} \mathrm{se}(\hat\beta_1) = \sqrt{\frac{MS_{\mathrm{Res}}}{S_{xx}}} \qquad MS_{\mathrm{Res}} = \frac{SS_\mathrm{Res}}{n-2} = \hat\sigma^2 \end{equation}
+
+<<cache = TRUE>>=
+MSRes = residualStdError / sqrt(n-2)
+print(MSRes)
+@
+
+\clearpage
+
+\section*{e}
+
+
+We will derive simple expressions from known relationships
+	\begin{align*}
+		SS_{\mathrm{Res}} &= SS_{\mathrm{T}} - \hat{\beta}_1 S_{xy}\\
+		SS_{\mathrm{T}} &= SS_{\mathrm{R}} + SS_{\mathrm{Res}}\\ 
+	\end{align*}
+It is easy to see then that 
+	\begin{align*}
+		SS_{\mathrm{T}} &= SS_{\mathrm{Res}} + \hat \beta _1 S_{xy}\\
+		SS_{\mathrm{R}} &=   \hat \beta _1 S_{xy}
+	\end{align*}
+	
+	
+<<cache = TRUE>>=
+SST = SSRes + slope*Sxy
+SSR = slope*Sxy
+Rsqrd = SSR/SST
+print(Rsqrd)
+@
+
+
+\section*{f}
+
+<<cache = TRUE>>=
+p = 2
+Fstat = (SSR/(p-1))/(SSRes/(n-p))
+print(Fstat)
+@
+\clearpage
+
+
+\section*{g}
+\begin{align*}
+	y\tran (I_n H_1)y = y\tran(I_n - H)y + y\tran(H-H_1)y 	
+	\end{align*}
+	
+	The first statement we want to show is
+	\begin{align*}
+		\mathrm{trace}(I_n -H_1) = n-1
+	\end{align*}
+	Well the matrix $I_n$ has $a_{ii} = 1 \, \forall \, i\in [1,n]$ and $h _{ii} = 1/n \, \forall \, i \in [1,n]$
+	By definitions:
+	\begin{align}
+		\mathrm{trace}(I_n-H_1) &= \sum_{i=1}^{n}(a_{ii} - h_{ii})\\[2ex]
+		&= \sum_{i=1}^{n}(1-1/n)\\[2ex]
+		&= n(1-1/n) = n-1
+	\end{align}\\
+	
+	The second statement we need to prove is that:
+	\begin{equation}
+		\mathrm{trace}(H-H_1) = p-1
+	\end{equation}
+	We use the properties of the trace operator:
+	\begin{align}
+		\mathrm{trace}(H-H_1) &= \trace(H) - \trace(H_1)\\[2ex]
+		\trace(H)&= \trace(X(X\tran X)^{-1}X\tran)\\
+		&= \trace(X\tran X (X\tran X)^-1) \\
+		&= \trace(I_p) \qquad \text{since} \quad X\tran X \in \mathbb{R}^{p\times p}\\
+		&= p
+	\end{align}
+	As shown before the trace of $H_1$ is 1 and this with the previous derivation proves (13). 
+\clearpage
+\underline{Numerical part}
+
+
+<<cache = TRUE>>=
+require(MASS)
+bigx = cbind(matrix(1,length(x1)),x1)
+
+n1 =length(x1)
+H1 = matrix(1/n1,n1,n1)
+sum(diag((diag(n1) - H1)))
+
+H = bigx %*%  ginv(t(bigx) %*% bigx) %*% t(bigx)
+sum(diag(H - H1))
+
+@
+
+
+
+\clearpage
+\section*{h}
+
+<<cache=TRUE>>=
+yhat = intercept + slope*x1
+e = y - yhat
+plot(x1,e)
+mean(x1)
+@
+The residuals have zero mean.
+\clearpage
+<<>>=
+boxplot(x1[1:10],e[1:10],x1[11:20],e[11:20],x1[21:30],
+        e[21:30],x1[31:40],e[31:40],x1[41:41],e[41:51])
+@
+However a simple box plot shows quite clearly that they do not have constant variance. 
+\clearpage
+<<cache = TRUE>>=
+
+sum(e)#The sum of the residuals is zero, i.e. they are orthogonal to each other
+bigx = cbind(matrix(1,length(x1)),x1)
+t(bigx)%*%e#the residuals are orthogonal to the regressors
+t(yhat)%*%e#the residuals are orthogonal to the fitted values
+
+@
+
+\clearpage
+\section*{i}
+<<cache = TRUE>>=
+prediction = intercept + slope*4.8
+print(prediction)
+@
+
+\section*{j}
+	Let $x_0 :=x_1^{new} $
+	\begin{align}
+		\widehat{\E(y\vert x_0)} = \hat \mu_{u\vert x_0} = \hat \beta_0 +\hat \beta_1 x_0 \label{estimator_prediction}\\
+	\end{align}
+	The variance on a prediction is the variance of its estimator which is \ref{estimator_prediction}, so we compute as follows:
+	\begin{align}
+		\Var(\hat \mu_{y\vert x_0}) &= \Var(\hat \beta_0 + \hat \beta_1 x_0)\\[2ex]
+		&= \Var [\bar y + \hat \beta_1 (x_0 - \bar x)]\\[2ex]
+		&= \frac{\sigma^2}{n} + \frac{\sigma^2 (x_0-\bar x)^2}{S_{xx}}\\[2ex]
+		&= \sigma^2 \left[\frac{1}{n} + \frac{(x_0-\bar x )^2}{S_{xx}}\right]
+	\end{align}
+	
+	Now to estimate this value we use :
+	\[\hat \sigma ^2 = MS_{Res}\]
+	
+	
+	
+<<cache = TRUE>>=
+x1new = 4800/1000
+MSRes*(1/n1  + (x1new - xbar)^2/Sxx)
+@
+
+
+
+
+
+
+
+
+
+
+
+  
+ 
+
+
+\end{document}

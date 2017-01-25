@@ -1,0 +1,24 @@
+---
+title: "Math 423-Assignment 1"
+author: "Frederic Boileau"
+date: "24 septembre 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Read, echo = TRUE}
+#Read in data set 1
+file1<-"http://www.math.mcgill.ca/dstephens/Regression/Data/a1-1.txt"
+data1<-read.table(file1,header=TRUE)
+
+x1<-data1$x
+y1<-data1$y
+
+fit.RP = lm(y1 ~ x1)
+print("The parameters are ")
+plot(data1$x,data1$y,pch=18)
+```
+

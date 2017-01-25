@@ -1,0 +1,126 @@
+paste(coln[!names(coln) %in% c("bdpdia", "bpsys")]
+
+
+
+\section{dump}
+We see that no level of race3 appear whereas three of race1 do. We will thus be more inclined to use the first of those two possible predictors if we decide to pick one. Only one level of the education level shows up. Moreover it is a "transitory" level, i.e. some college, and so wide disparity could still be statistically relevant. Also for house hold income only 3 levels show up and so we keep it. However home type is present with all its levels. We note for future interpreatation that those two latter predictors are the most clearly concerned with economic status. Surprisingly phyisical activity does show up but from past litterature we refrain from dropping that term right now. Also surprisingly to inuitive knowledge dirchol has a very high p-value. Finally we are left with alcoholic consumption related variables. The consumption per day has a much lower p-value than its year counterpart and so we will keep it for the time being.
+
+<<>>=
+#regx = paste('/^(?=.*\\totchol\\b)(?=.*\\bpsys\\b)(?=.*\\pulse\\b)(?=.*\\married\\b)',
+#'(?=.*\\race3\\b)(?=.*\\poverty\\b)(?=.*\\age\\b).*$/m',sep = "")
+
+#regx = '(?=.*totchol)(?=.*bpsys)(?=.*pulse)(?=.*married)(?=.*race3)'
+#r = grep(regx,rownames(t),perl = T)
+
+#t = t[l,]
+#predictors_1_4[grep(',rownames(predictors_1_4)),]
+#rownames(t)
+#print(t['Pr(>|t|)'], row.names = F)
+@
+
+
+\clearpage
+\subsection{Second model by backwards elimination}
+<<>>=
+fit.rem_1 = update(fit.fullAdd, ~. - alcyear - race1 - home - dirchol - physact)
+#predictors_1 = as.data.frame(summary(fit.rem_1)$coefficients)
+#predictors_1[predictors_1[,"Pr(>|t|)"] > 0.05,]
+@
+
+
+<<CACHE = T>>=
+library(car)
+inflation = as.data.frame(vif(fit.rem_1))
+inflation[inflation[,"GVIF"] > 4,]
+@
+
+<<>>=
+fit.rem_1_1 = update(fit.fullAdd, ~. - weight)
+fit.rem_1_2 = update(fit.fullAdd, ~. - bmi)
+fit.rem_1_3 = update(fit.fullAdd, ~.  - hhinc)
+fit.rem_1_4 = update(fit.fullAdd, ~. - poverty)
+predictors_1_1 = as.data.frame(summary(fit.rem_1_1)$coefficients)
+predictors_1_2 = as.data.frame(summary(fit.rem_1_2)$coefficients)
+predictors_1_3 = as.data.frame(summary(fit.rem_1_3)$coefficients)
+predictors_1_4 = as.data.frame(summary(fit.rem_1_4)$coefficients)
+@
+Let us describe the procedure thus far...blabla
+Multicollinearity...we have to choose
+
+\clearpage
+
+<<>>=
+predictors_1_1["bmi",]
+predictors_1_2["weight",]
+predictors_1_3["poverty",]
+predictors_1_4[grep('^hhinc',rownames(predictors_1_4)),]
+@
+\clearpage
+We choose weight and poverty
+<<>>=
+fit.rem_2 = update(fit.rem_1, ~. - hhinc - bmi)
+predictors_2 = as.data.frame(summary(fit.rem_2)$coefficients)
+predictors_2[predictors_2[,"Pr(>|t|)"] > 0.05,]
+fit.rem_3 = update(fit.rem_2, ~. - alcday - home)
+predictors_3 = as.data.frame(summary(fit.rem_3)$coefficients)
+predictors_3[predictors_3[,"Pr(>|t|)"] > 0.05,]
+@
+#################################################################################
+\clearpage
+<<>>=
+fit.add_1 = lm(bpdia ~ totchol + bpsys + pulse + married + race3 + age,survey)
+semp = summary(fit.add_1)
+print(semp)
+@
+\clearpage
+<<>>=
+library(car)
+load("new.RData")
+fit.add_2 = update(fit.add_1, ~. + hhinc + poverty)
+inflation = as.data.frame(vif(fit.add_2))
+inflation[inflation[,"GVIF"] > 2,]
+fit.add_3 = update(fit.add_2, ~. - hhinc )
+drop1(fit.add_3, test = "F")
+fit.add_3_Int = lm(bpdia ~ totchol*bpsys*pulse*married*race3*poverty*age,survey)
+#s = step(fit.add_3_Int,direction="backward",test="F") 
+#d1 = drop1(s, test = "F")
+d1_df = as.data.frame(d1)
+print(d1_df,row.names = F)
+@
+\clearpage
+We have looked at the full additive model first. Then we chose the six predictors which were the most significant according to the t test values. We inspected the coefficients with both high and low p values and found that hhinc had levels in the two extreme categories. Moreover we supposed there should be some multicollinearity between house hold income and the poverty index. We confirmed this by fitting both and then looking at the VIF. At the same time we actually checked multicollinearity in the rest of the model too. The test reveled that there was indeed heavy multicollinearity between hhinc and poverty but not in the rest. Moreover hhinc is a binned predictor whereas poverty is a continuous variable. As we don't have a solid grasp of binning we were naturally inclined to choose poverty over hhinc. Finally poverty seemed by a simple anova to have slightly more predictive power. The thus chosen main variables were our basis for foward selection. Since we had only 7 variables at this point we were able to use the function step to find the best model according to AIC values amongst all the models with those 7 predictors. This model turns out to have high order interactions and so we refrained from trying to add them "manually" one by one and concluded that the model with all interactions was the best one achievable "manually" for those 7 variables. 
+<<>>=
+anova(fit.add_3_Int, update(fit.add_3_Int, ~. + alcday,survey))[2,"Pr(>F)"]
+anova(fit.add_3_Int, update(fit.add_3_Int, ~. + alcyear,survey))[2,"Pr(>F)"]
+anova(fit.add_3_Int, update(fit.add_3_Int, ~. + weight,survey))[2,"Pr(>F)"]
+anova(fit.add_3_Int, update(fit.add_3_Int, ~. + bmi,survey))[2,"Pr(>F)"]
+@
+We have afterwards considered adding a new main effect, alcyear and weight seemed to be the only valid entry by the F-tests in the above anovas.
+<<>>=
+fit.add_4 = update(fit.add_3_Int, ~. + alcyear + weight)
+a = anova(fit.add_3_Int,fit.add_4)
+a$`Pr(>F)`
+#fit.add_4_int = lm(bpdia ~ totchol*bpsys*pulse*married*race3*poverty*age*alcyear*weight,survey)
+fit.add_4_1 = update(fit.add_4_int, ~. - totchol:bpsys:pulse:married:race3:poverty:age:alcyear:weight)
+#d41 = drop1(fit.add_4_1, test = "F")
+@
+
+\clearpage
+
+<<>>=
+#fit.add_4_1 = update(fit.add_3_Int, ~.  + totchol*bpsys*pulse*married*race3*poverty*age*alcyear*weight)
+a = anova(fit.add_4,fit.add_4_1)
+a$`Pr(>F)`
+
+@
+##########################################################################
+
+
+
+<<>>=
+fit.7 = update(fit.5, ~. + poverty*bpsys*totchol*pulse*age,survey)
+anova(fit.6,fit.7)
+fit.8 = lm(bpdia~. + married + poverty*bpsys*totchol*pulse*age,survey)
+anova(fit.7,fit.8)
+
+@

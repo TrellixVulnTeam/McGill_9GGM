@@ -1,0 +1,132 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+
+
+%Math shortcuts
+\newcommand{\vout}{v\ft{out}}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math326}\\
+			\vspace{0.5cm}
+			Homework I - Math417
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			Tim Hoheisel
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	
+	\section{Some linear algebra}
+	
+	a)\begin{equation*}
+		b_1 = (1,0,1)\tran \quad b_2=(0,1,0)\tran
+	\end{equation*}
+	We show the third basis element to span  $\mathbb{R}^3$ is not uniquely determined by providing 2 linearly independent vectors which complete the basis. Obviously $b_3$ is not uniquely determined when considering scaling but this is trivial. Any vector with $x\neq z$ will work. \\
+	Let \begin{equation*}
+		b_3 = (1/2,0,1) \quad b^\prime_{3} = (1,0,1/2)
+	\end{equation*}
+	b) \\The question is essentially asking to prove that an orthogonal set not containing the zero vector contains only linearly independent vectors. 
+	We argue by contradiction. Assume the vectors are linearly dependent. 
+	\begin{equation*}
+		\exists \quad \alpha_i \quad s.t. \quad \sum_{i=1}^{r}\alpha_i v_i = 0
+	\end{equation*}
+	We take the inner product of both sides with an arbitrary vector from the set:\begin{equation*}
+		\langle \sum_{i=1}^{r}\alpha_i v_i, v_j \rangle = \langle 0,v_j \rangle
+	\end{equation*}
+	
+	But\begin{equation*}
+		\langle 0,v_j\rangle = 0 \quad \forall v_j \quad \text{by the definition of the inner product}
+	\end{equation*}
+	
+	\begin{align*}
+			\langle \sum_{i=1}^{r}\alpha_i v_i, v_j \rangle &= 0\\
+			\sum_{i\neq j}^{r}\alpha_i \langle v_i,v_j \rangle + \alpha_j\langle v_j,v_j \rangle &= 0 \\
+			\therefore \alpha_j\langle v_j,v_j \rangle &= 0 
+	\end{align*}
+	By assumption $v_j$ is non zero and so we have a contradiction. $\blacksquare$\\
+	c)\\
+	$rank(zz\tran) = 0$ obviously. The reason being that all columns (or rows) differ only by a scalar multiplication. For a more formal proof:
+	\begin{equation*}
+		(zz\tran)x = z(z\tran x) \quad \forall \quad x \in \mathbb{R}^n 
+	\end{equation*}
+	Now $z\tran x \in \mathbb{R} \quad \forall z,x\in \mathbb{R}^n$\\
+	It follows that the image is just all scalings of the vector z.\\
+	d)\\
+	The rank of a matrix is equal to the number of linearly independent columns. Let $b_i$ denote the columns of the matrix B. We therefore have that \begin{equation*}
+		AB = [Ab_1 | Ab_2 ...|Ab_n] \text{for some } n\in \mathbb{N}
+	\end{equation*}
+	We can see that the columns of AB live in the image of A. Moreover for any column of b, if they are linearly independent then so is their product with A. So:
+	\begin{align*}
+		\text{im}AB \subseteq \text{im}A \\
+		\text{and} \quad \text{im}AB \subseteq \text{im}B
+	\end{align*}
+	The image of the product is thus contained in the smallest image of the two matrices and the proof is complete. $\blacksquare$
+	\section{Symmetric matrices, quadratic functions and infima}
+	a)\\
+	We prove the statement using the fundamental subspaces:
+	\begin{equation}
+		\text{Im}A = (\ker A\tran)^\bot = (\ker A)^\bot
+	\end{equation}
+	We have that the image is the complement of the kernel, which means their intersection is zero. This latest fact is trivial from the assumptions. The inner product of a non zero vector with itself is strictly positive. By construction a subspace cannot have elements in common with its orthogonal complement. \\
+	b)\\
+	First we have $\dim \ker A + \dim \text{Im} A = n$
+	Moreover from a) we have that their intersection is zero. The sum of two subspaces is the span of the union of their basis. Let p be the rank and q be the kernel's dimension. The basis of the image will have p independent elements and the basis of the kernel will have q independent vectors. The union  of those sets is a set of (p+q=n) linearly independent vectors (by a).  so the span of this basis is $\mathbb{R}^n $\\ 
+	c)
+	
+	\clearpage
+	\section{Convexity preserving operations}
+	a)\\
+	The intersection of any number of convex sets is a convex set. Very trivial $\Rightarrow$ very hard. Let C denote the intersection of the convex sets. For all x and y in C, x and y are in all the $C_i$s. By the definition of convexity, if they are in any $C_i$, then so is the line joining them.\\
+	b)\\
+	Let $y_i = Ax_i \quad \forall \quad y_i \in \text{im}A \quad , \quad x_i \in C$
+	\begin{equation*}
+		\lambda x_1 + (1-\lambda)x_2 \in C
+	\end{equation*}
+	By linearity of matrix multiplication:
+	\begin{equation*}
+		\lambda y_1 + (1-\lambda)y_2 = A(\lambda x_1 + (1-\lambda)x_2) \in A(C)\\ 
+		\blacksquare 
+	\end{equation*}
+	For the pre-image read the preceding lines in reverse.
+	
+	\section{Minimizing function over the unit ball}
+	This is trivial to see that we can make the inner product null.
+	$-g/\vert \vert g \vert \vert$
+	
+	
+	
+	
+
+	
+\end{document}

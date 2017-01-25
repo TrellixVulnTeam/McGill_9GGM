@@ -1,0 +1,10 @@
+#F stat with 1,n-k-1 df
+beta_star = c(beta.1,beta.2,beta.3)
+
+ncp1 = (beta_star %*% t(Xcs)) %*% ((Xc) %*% beta_star)
+#alternative computation, Xcs only once because we only divide once by var
+var = sqrt(norm(data.matrix(y - data.matrix(X) %*% data.matrix(BigBeta))))/n
+ncp2 = ((beta_star %*% t(Xc)) %*% ((Xc) %*% beta_star)) / var
+
+f3 >= qf(.95,df1 =1,df2 = n-k-1,ncp2)
+#We cannot reject the hypothesis that 

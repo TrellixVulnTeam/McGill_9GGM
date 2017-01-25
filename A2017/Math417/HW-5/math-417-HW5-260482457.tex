@@ -1,0 +1,289 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{enumerate}
+\usepackage{ textcomp }
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+
+
+%Math shortcuts
+\newcommand{\vout}{v\ft{out}}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math417}\\
+			\text{Mathematical Programming}\\
+			\vspace{0.5cm}
+			Homework V
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			Tim Hoheisel
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+
+	\section{}
+	
+	\begin{equation}
+		\min c\tran x \quad s.t. \quad Ax=b
+	\end{equation}
+	
+		Let $x = x^+ - x^-$ and $x^+ x^- \geq 0$
+		
+		Then we have
+		\begin{equation}
+		\min c\tran (x^+-x^-) \quad : \quad A(x^+-x^-) = b
+		\end{equation}
+		
+		We put this problem in standard form by substitution:
+		\begin{align*}
+		\hat x = (x^+ , x ^-) \quad \hat c = (c, -c) \quad \hat A = [A \vert -A]
+		\end{align*}	
+		And the problem defined by the hat versions of c x and a and the same b vector is clearly equivalent. However now our vector $\hat x$ is restrained to be non negative so we can take the dual.
+		\begin{equation}
+		\max b\tran y \quad : \quad \hat A\tran  y \leq \hat c
+		\end{equation}
+		The constraints of the dual can be rewritten as follows:
+		\begin{align*}
+		A\tran y \leq c \qquad \text{and}\qquad -A\tran y  \leq -c  \quad \Rightarrow A\tran y = c\\ 
+		\end{align*}
+		Thus 
+		\begin{equation}
+			\max b\tran y \quad \hat A \tran y = c
+		\end{equation}
+		is the simplified dual problem.
+		
+		
+	\clearpage
+	
+	\section{}
+	
+	\begin{table}[htbp!]
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			& $\inf(P) = -\infty$&$\inf(P) \in \mathbb{R}$&$\inf(P) = +\infty$\\\hline
+			$\sup(D) = -\infty$ &\checkmark& \texttimes & \checkmark \\ \hline 
+			$\sup(D) \in \mathbb{R}$& \texttimes& \checkmark& \texttimes \\ \hline 
+			$\sup(D) = + \infty$ &\texttimes & \texttimes & \checkmark \\ \hline 
+		\end{tabular}
+	\end{table}
+	
+	There are only two theorems we need to invoke to show that the situations mentioned above are impossible.
+	Strong Duality: (1,2)(2,3) because for a LP a solution exists for the primal iff it exist for the dual. Weak Duality:  (2,1)(3,1)(3,2) because for a LP the supremum of the dual is always less or equal to the infinimum of the primal.\\
+	(1,1) Unbounded Primal which means infeasible dual:\\
+	Let c = (-1,-1) Ax = b, A = I, b = (0,1)\\
+	(1,3) For a problem infeasible for both the primal and the dual simply take a 2x2 matrix will a entries equal to 1 for A (so $A=A\tran$) and b and c with different entries. (e.g. b = (1,2) and c= (3,4))\\
+	(2,2) A solution exists for the primal ($\iff$ exists for the dual)\\
+	Look for example (lp from third homework set)\\
+	(3,3) Unbounded dual so infeasible primal \\
+	\begin{equation*}
+	b = (1,1) \quad A\tran = \begin{Bmatrix}
+	1&0\\
+	0&0
+	\end{Bmatrix}
+	\quad c = (1,1)
+	\end{equation*}
+	Clearly we can let the second component of y go to infinity and so the problem is unbounded. \\
+	(2,2) From a past assignment where we solved the problem graphically:
+	\begin{align*}
+	\min \quad 5x_1 + 7x_2 + 4x_3 + 8x_4 + 9x_5 + 10x_6 \quad \text{s.t.} \quad x_1 + x_2 &= 11\\
+	x_3 + x_4 &= 10\\
+	x_5 + x_6 &= 9\\
+	x_1 + x_3 + x_5 &= 18\\
+	x_i &\ge 0
+    \end{align*}
+	
+	
+	
+	
+	
+	
+	\clearpage
+	
+	\section{}
+	
+	We have that 3.10 holds we know that $\exists r \, s.t. \, u_r < 0 $ Hence we have that :
+	\begin{equation}\label{uneg}
+		c\tran z = c\tran x + tu_r \leq c\tran x 
+	\end{equation}
+	Since $u_r < 0$ and $t \geq 0$ by construction. We need to have that 
+	\begin{equation}
+		Az(t) = b
+	\end{equation}
+	Let J be the set of indices with $\abs{J} = m$ and K its complement. We start the process by choosing a BFP x with $x_K = 0$. So we construct $z_J$ the following way:
+	\begin{equation}
+		z_J = B^{-1}(b- t a_r) = x_J - td
+	\end{equation}
+	Where we have defined d as :
+	\begin{equation}
+		d := B^{-1}a_r
+	\end{equation}
+	With B being the square matrix with the linearly independent columns $a_J$ and N the matrix with the column vectors $a_K$. Now we have
+	\begin{equation}
+		A z(t) = Bz_J + Nz_K = b
+	\end{equation}
+	
+	Now assume $d_i \leq 0 \quad \forall \, i \in J$
+	Well then it is easy to see that the feasible vector z(t) is also non-negative for any positive t:
+	\begin{align}
+		x_j - td_j \geq 0 
+ 	\end{align}
+	
+	Therefore we can make t as large as we want.  Looking at \ref{uneg} we can see that therefore the objective function can be made as small as possible, i.e. the problem is unbounded.
+	$\blacksquare$
+	
+	\clearpage
+	
+	\section{Simplex algorithm iteration}
+	Our aim is to find for which index $r\in K$ is the vector
+	\begin{equation}
+		u_k := c_k - a_k\tran y
+	\end{equation}	
+	Smaller than zero. The first step is to compute y which is defined as
+	\begin{equation}
+		y:= (B\tran)^{-1}c_J
+	\end{equation}\\
+	So we need to compute $(B\tran) ^{-1 }$ which is pretty straightfoward:\\
+	\begin{align}
+		(B\tran) = \begin{Bmatrix}
+		1&0&1&0\\
+		1&0&0&0\\
+		0&1&0&0\\
+		0&0&0&1
+		\end{Bmatrix}
+		\quad \Rightarrow \quad (B\tran)^{-1} = 
+		\begin{Bmatrix}
+		0&1&0&0\\
+		0&0&1&0\\
+		1&-1&0&0\\
+		0&0&0&1
+		\end{Bmatrix}\\[2ex]
+		\therefore y = (0,0,-2,0)
+	\end{align}
+	
+	We the compute the different possible $u_r$:
+	\begin{alignat}{2}
+		u_2 &= -3 - (1,3,0,0)\tran(0,0,-2,0) &&= -3\\
+		u_3 &= -4 - (1,1,0,1)\tran(0,0,-2,0) &&= -4\\
+		u_6 &= 0 - (0,0,1,0)\tran(0,0,-2,0) &&= 1
+	\end{alignat}
+	
+	From this we can see that $u_6$ is not a contender. We can choose between $r= 2$ or $r=3$ and choose the later. 
+	Now let's compute $d_J$\\
+	\begin{align}
+		d_J = B^{-1}a_3 =  
+		\begin{Bmatrix} 0&0&1&0\\
+						1&0&-1&0\\
+						0&1&0&0\\
+						0&0&0&1
+		\end{Bmatrix}
+		\begin{Bmatrix}
+		1\\1\\0\\1
+		\end{Bmatrix}
+		= (0,1,1,1)	 	
+	\end{align}
+	 
+	 Now we take choose the value of $\hat t $:
+	 \begin{equation}
+	 	s = \mathrm{argmin}\left \{\frac{x_j}{d_j} \, \vert \, d_j > 0  \right \} = 4  \Rightarrow \hat t = \frac{x_4}{d_4} = 2
+	 \end{equation}
+	 	Remember \[x = (2,0,0,2,6,0,3)\]
+	\clearpage
+	\begin{paracol}{2}
+			\begin{alignat*}{2}
+			\hat x_1 &= x_1 - 2\times 0 &&=2 \\
+			\hat x_2 &= 0  &&=0 \\
+			\hat x_3 &= \hat t &&= 2 \\
+			\hat x_4 &= x_4 - 2\times 1 &&= 0\\
+			\hat x_5 &= x_5 - 2\times1 &&=1 \\
+			\hat x_6 &= 0 &&= 0\\
+			\hat  x_7 &= x_7 - 2\times1 &&=1   
+			\end{alignat*}
+
+		
+	\switchcolumn
+	\vspace{5ex}
+	We can now write down $\hat x$
+		\begin{equation*}
+		\hat x = (2,0,2,0,1,0,1)
+		\end{equation*}
+    Both $\hat x$ and $x$ are not degenerate as all the basic components are non-zero for their respective index sets: \\
+    \[ J= \{1,4,5,7\} =\{1,3,5,7\}\]
+	\end{paracol}
+	
+	\clearpage
+	\section*{Dump}
+	Let's derive the dual
+	
+	\begin{align*}
+	\min\quad  &c\tran x + \lambda\tran (b-Ax)\\
+	g &\quad : \quad \lambda \mapsto \inf \{c\tran x + \lambda \tran (b - Ax)\}\\
+	g(\lambda) &\leq c\tran \bar x + \lambda \tran (b - A \bar x) = c\tran \bar x\\
+	g(\lambda) &= \lambda \tran b  + \inf \{(c-A\tran \lambda)\tran x \}\\[2ex]
+	\inf \{ (c- A\tran \lambda)\tran x   \} &= \begin{cases} 0, \quad x \geq 0 \quad c - A\tran \lambda > 0\\
+	0, \quad x \leq 0 \quad c - A\tran \lambda < 0 \\
+	0, \quad c- A\tran \lambda =0 \quad \\
+	-\infty \quad \text{elsewhere}
+	\end{cases}
+	\end{align*}
+	So we can formulate the dual problem is as following:
+	\begin{equation}
+	\max_{\lambda \in \mathbb{R}^m} g(\lambda) = b\tran \lambda \quad s.t. \quad \begin{cases}  x \neq 0 \quad A\tran \lambda \neq c \\
+	x = 0 \quad A\tran \lambda =c\end{cases}
+	\end{equation}
+	
+	
+	
+
+	
+	\clearpage
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+\end{document}

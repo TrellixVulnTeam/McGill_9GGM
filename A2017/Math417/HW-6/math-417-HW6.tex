@@ -1,0 +1,175 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{enumerate}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+
+
+%Math shortcuts
+\newcommand{\vout}{v\ft{out}}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math417}\\
+			\text{Mathematical Programming}\\
+			\vspace{0.5cm}
+			Homework VI
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			Tim Hoheisel
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	
+	\section{Dual of the big-M program}
+	\vspace{1cm}
+	
+	\begin{align}
+		M\geq 0 \qquad A \in \mathbb{R}^{m\times n} \qquad b\in \mathbb R^{m} \qquad c \in \mathbb{R}^n\\[2ex]
+		\min c\tran x + M e\tran z \quad s.t. \quad Ax+z = b \quad x,z \geq 0
+	\end{align}\\
+	
+	We re-write the objective function and the constraints the following way:
+	\begin{align}\label{compresser}
+		(c\tran x + Me\tran z )\begin{pmatrix} x \\ z \end{pmatrix} \qquad s.t. \qquad
+		\begin{bmatrix} A &I_m \end{bmatrix} \begin{pmatrix} x\\z \end{pmatrix}  = 	 b 
+	\end{align}
+
+	We then take its dual which gives us
+	\begin{align}\label{dual}
+		\mathcal D : \qquad \max \hat b \tran y \qquad s.t. \qquad 
+		\begin{bmatrix} A\tran \\ I_m \end{bmatrix} y \leq 
+		\begin{pmatrix} c \\ Me_m \end{pmatrix}
+	\end{align}
+	Where the hat on the b represent the added zeros in the vector on the RHS of the equation in \ref{compresser}. They are useless however since they do not affect the value of the linear functional so we can get rid of them. The hat on the y is to show that vector lives $\mathbb{R}^{n+m}$ and we remove it as well when we split the constraints in two to make obvious that we have achieved the desired result. Those explanations are enough to rewrite \ref{dual} the following and required way:
+	\begin{align}
+		\max b\tran y \qquad s.t. \qquad A\tran y \leq c \quad y_i \leq M
+	\end{align}
+	
+	\clearpage
+	
+	\section{Addendum to the big-M method}
+	\vspace{2cm}
+	
+	a) We wish to prove that if there is no $M>0$ such that $L( M)$ has a solution then the original program has no solution.
+	
+	 We prove the statement by contrapositive and so claim that if the original program has a solution then there exists such an M. First of all if the original problem is feasible then so is LM and so we need only to show that LM is bounded. We derive a contradiction by assuming the o. problem has a solution and that the LM is unbounded. If the LM is unbounded then its dual is infeasible. Since the o. program has a solution we know that $A\tran y \leq c$ is not empty. So for the dual of the LM to be infeasible means that we cannot find a bound on the components of y which is a contradiction.\\
+	 b) Let $\bar M > 0$ such that $L(\bar M)$ has a solution. We wish to prove that if there doesn't exist a $M>0$ such that all the solutions have their z part null then the o. program is infeasible. 
+	 
+	 From theorem 3.3.2 we already have that if there doesn't exist such an M then the o. program doesn't have a solution. We want to show that it is moreover not even feasible. We will show that the o. program is bounded, since it doesn't have a solution it will follow that it is infeasible. Assume the o. program is not bounded. Then it would follow that the dual of LM is infeasible. By strong duality it would follow that LM is infeasible. But we have assumed that there exists a solution for LM, so we have a contradiction. 
+	 
+	 Working backwards it means the o. program was bounded, thus infeasible if it doesn't have a solution.
+	
+	
+	\clearpage
+	
+	\section{Characterization of convex functions}
+	
+	i) $\iff$ ii)
+	
+	i) $\Rightarrow ii)$ by contrapositive, if f is not convex on its domain then it cannot be convex on a larger set. 
+	
+	$ii) \Rightarrow i)$ If f is convex on its domain, then defining f(x) as infinite outside its domain mean that every point inside its domain will be less or equal than the points outside. With symbolism : $x, y \notin  dom  f$\\
+	i) $ \xi = \lambda x +(\lambda-1)y \notin dom f \Rightarrow f(\xi) = \infty \leq \infty $ \\
+	ii)$ \xi = \lambda x +(\lambda-1)y \notin dom f \Rightarrow f(\xi) < \infty $\\
+	In both cases if f is convex on its domain then the extension of f over the rest of the reals also is.
+	\vspace{1cm}
+	
+	ii) $\Rightarrow$ iii) 
+	
+	$f(\lambda x + (\lambda - 1)y) \leq \lambda f(x) + (1-\lambda ) f(y)$\\
+	Let us choose two points in the epigraph which are arbitrary.
+	\begin{align}
+		\alpha \geq \lambda f(x) \qquad \beta \geq (1-\lambda)f(y)\\[2ex]
+		(x,\alpha/\lambda) \, ,  (y,\beta /(1-\lambda)) \in \mathrm{epi} f\\[2ex]
+		\lambda (x,\alpha) + (1-\lambda)(y, \beta /(1-\lambda )) = (\lambda x, \alpha)  + ((1-\lambda)y, \beta) \in \mathrm{epi} f 
+	\end{align}
+	The last assertion by the convexity of f. 
+	
+	iii) $\Rightarrow$ ii) read the first equivalence backwards. 
+	
+	\clearpage
+	\section{Convex functions}
+	
+	\subsection{}
+	
+	We can restate what we want to show as: "An affine transformation preserves convexity" which is quite obvious since every affine set is convex but not the other way around. First let us say that an affine transformation can be defined as follows:\\
+	A function is f affine iif 
+	\begin{equation}\label{affine}
+		f\left(\sum_{i=1}^{n}\lambda_i x_i\right)  = \sum_{i=1}^{n}\lambda_i f(x_i)
+	\end{equation}
+	Getting back to what we need to show:
+	\begin{equation}
+		(f \circ g ) (\lambda x + (1-\lambda )y) \leq \lambda (f\circ g)(x) + (1-\lambda )(f\circ g)(y)
+	\end{equation}
+	
+	\begin{align*}
+	(f\circ g)(\lambda x + (1-\lambda )y) &= f(g(\lambda x + (1-\lambda )y))\\
+									  &= f(\lambda g(x) + (1-\lambda)g(y)) \qquad\text{By \ref{affine}}\\
+									  &\leq \lambda f(g(x)) + (1-\lambda)f(g(y)) \qquad \text{By assumption}
+	\end{align*}
+	And so we are done.
+	
+	\subsection{}
+	Let $Q$ be positive semi-definite, we want to show that the quadratic form defined by  \ref{map} is convex 
+	\begin{equation}\label{map}
+		f\, :\, x\in \mathbb{R}^n \mapsto \frac{1}{2} x\tran Q x
+	\end{equation}
+	First we mention the fact that saying is $Q$ is positive semi-definite is the same as saying the map defined by \ref{map} is a a norm\footnote{As stated in class}. Now we simply need to show that every norm is a convex map. The proof of the latest is almost immediate. A norm has to be positive homogeneous of degree one, i.e. : 
+	\begin{equation}
+		f(\lambda x) = \lambda f(x) \quad \forall x \in \mathbb{R}^n, \lambda \geq 0
+	\end{equation}
+	Moreover it has to respect the triangle inequality. Let's put those two facts together:
+	\begin{alignat*}{2}
+		f(\lambda x + (1-\lambda)y ) &\leq f(\lambda x) + f((1-\lambda )y) \qquad && \text{Triangle inequality}\\
+		&= \lambda f(x) + (1-\lambda)f(y) \qquad &&\text{Positive homogeneous degree 1}
+	\end{alignat*}
+	And so we have completed the proof.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+\end{document}

@@ -1,0 +1,339 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage{comment}
+\usepackage[english]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+
+
+
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+\newcommand{\trace}{\mathrm{trace}}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math 423}\\
+			\text{Linear Regression}\\
+			\vspace{0.5cm}
+			Homework III
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			David A. Stephens
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	
+\section*{a}
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{setwd}\hlstd{(}\hlkwd{dirname}\hlstd{(rstudioapi}\hlopt{::}\hlkwd{getActiveDocumentContext}\hlstd{()}\hlopt{$}\hlstd{path))}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: RStudio not running}}\begin{alltt}
+\hlstd{smoke}\hlkwb{<-}\hlkwd{read.csv}\hlstd{(}\hlstr{"data.csv"}\hlstd{,}\hlkwc{header}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+\hlstd{regressors} \hlkwb{=} \hlstd{smoke[,}\hlnum{1}\hlopt{:}\hlkwd{ncol}\hlstd{(smoke)}\hlopt{-}\hlnum{1}\hlstd{]}
+
+\hlstd{CO} \hlkwb{=} \hlstd{smoke}\hlopt{$}\hlstd{CO}
+\hlstd{tar} \hlkwb{=} \hlstd{smoke}\hlopt{$}\hlstd{TAR}
+\hlstd{nico} \hlkwb{=} \hlstd{smoke}\hlopt{$}\hlstd{NICOTINE}
+\hlstd{weight} \hlkwb{=} \hlstd{smoke}\hlopt{$}\hlstd{WEIGHT}
+\hlstd{k} \hlkwb{=} \hlkwd{dim}\hlstd{(regressors)[}\hlnum{2}\hlstd{]}
+\hlstd{n} \hlkwb{=} \hlkwd{dim}\hlstd{(smoke)[}\hlnum{1}\hlstd{]}
+\hlstd{X} \hlkwb{=} \hlkwd{cbind}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,n),regressors)}
+\hlstd{y} \hlkwb{=} \hlstd{smoke[}\hlkwd{ncol}\hlstd{(smoke)]}
+\hlstd{Xcs} \hlkwb{=} \hlkwd{scale}\hlstd{(regressors,}\hlkwc{center} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{scale} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\hlstd{Xc} \hlkwb{=} \hlkwd{scale}\hlstd{(regressors,}\hlkwc{center} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{scale} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fit.full} \hlkwb{=} \hlkwd{lm}\hlstd{(CO} \hlopt{~} \hlstd{tar} \hlopt{+} \hlstd{nico} \hlopt{+} \hlstd{weight)}
+\hlstd{anova.full} \hlkwb{=} \hlkwd{anova}\hlstd{(fit.full)}
+\hlstd{m.full} \hlkwb{=} \hlkwd{summary}\hlstd{(fit.full)}
+\hlstd{SSres.full} \hlkwb{=} \hlstd{(m.full}\hlopt{$}\hlstd{sigma)}\hlopt{^}\hlnum{2} \hlopt{*} \hlstd{(m.full}\hlopt{$}\hlstd{df[}\hlnum{2}\hlstd{])}
+\hlstd{SSres.full_2} \hlkwb{=} \hlkwd{sum}\hlstd{(}\hlkwd{residuals}\hlstd{(fit.full)}\hlopt{^}\hlnum{2}\hlstd{)}
+\hlstd{MSres} \hlkwb{=} \hlkwd{sqrt}\hlstd{(SSres.full}\hlopt{/}\hlstd{(n} \hlopt{-} \hlstd{k))}
+\hlstd{beta.0} \hlkwb{=} \hlkwd{coefficients}\hlstd{(fit.full)[}\hlnum{1}\hlstd{]}
+\hlstd{beta.1} \hlkwb{=} \hlkwd{coefficients}\hlstd{(fit.full)[}\hlnum{2}\hlstd{]}
+\hlstd{beta.2} \hlkwb{=} \hlkwd{coefficients}\hlstd{(fit.full)[}\hlnum{3}\hlstd{]}
+\hlstd{beta.3} \hlkwb{=} \hlkwd{coefficients}\hlstd{(fit.full)[}\hlnum{4}\hlstd{]}
+\hlstd{BigBeta} \hlkwb{=} \hlkwd{coefficients}\hlstd{(fit.full)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{equation}
+  SS_{Res}(\beta_0,\beta_1,\beta_2,\beta_3) = 33.5983067
+\end{equation}
+
+\section*{b}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fit.noWeight} \hlkwb{=} \hlkwd{lm}\hlstd{(CO} \hlopt{~}\hlstd{tar} \hlopt{+} \hlstd{nico)}
+\hlstd{m.NoWeight} \hlkwb{=} \hlkwd{summary}\hlstd{(fit.noWeight)}
+\hlstd{SSres.noWeight} \hlkwb{=} \hlkwd{sum}\hlstd{(}\hlkwd{residuals}\hlstd{(fit.noWeight)}\hlopt{^}\hlnum{2}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{equation}
+  SS_{Res}(\beta_0,\beta_1,\beta_2) = 33.8740523
+\end{equation}
+
+\clearpage
+
+\section*{c}
+
+The corresponding f-statistic is 
+\begin{equation}
+F_3 = \frac{SS_R (\beta_3 \vert \beta_2,\beta_1,\beta_0)}{MS_{res}}
+\end{equation}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{f3} \hlkwb{=} \hlstd{anova.full[}\hlnum{3}\hlstd{,}\hlnum{4}\hlstd{]} \hlcom{#directly from anova table}
+\hlstd{f3_2} \hlkwb{=} \hlstd{(SSres.noWeight} \hlopt{-} \hlstd{SSres.full)}\hlopt{/}\hlstd{(SSres.full} \hlopt{/} \hlstd{(n}\hlopt{-}\hlstd{k}\hlopt{-}\hlnum{1}\hlstd{))}
+\hlstd{f3_3} \hlkwb{=} \hlstd{anova.full[}\hlnum{3}\hlstd{,}\hlnum{2}\hlstd{]}\hlopt{/}\hlstd{(SSres.full} \hlopt{/} \hlstd{(n}\hlopt{-}\hlstd{k))}
+
+\hlstd{f3}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.1723496
+\end{verbatim}
+\begin{alltt}
+\hlstd{f3_2}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.1723496
+\end{verbatim}
+\begin{alltt}
+\hlstd{f3_3}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.1805568
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\clearpage
+
+\section*{d}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fit.full_backwards} \hlkwb{=} \hlkwd{lm}\hlstd{(CO} \hlopt{~} \hlstd{weight} \hlopt{+} \hlstd{nico} \hlopt{+} \hlstd{tar)}
+\hlstd{anova.full_backwards} \hlkwb{=} \hlkwd{anova}\hlstd{(fit.full_backwards)}
+\hlstd{anova.full_backwards}
+\end{alltt}
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Response: CO
+##           Df Sum Sq Mean Sq F value    Pr(>F)    
+## weight     1 178.75  178.75 111.722 7.277e-10 ***
+## nico       1 465.74  465.74 291.104 8.762e-14 ***
+## tar        1  28.14   28.14  17.588 0.0004088 ***
+## Residuals 21  33.60    1.60                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+We have 
+
+\begin{align}
+\overline{SS}_R (\beta_3 \vert \beta_0) &= 178.7470223\\
+\overline{SS}_R (\beta_2 \vert \beta_0, \beta_3) &= 465.7428416\\
+\overline{SS}_R (\beta_1 \vert \beta_0, \beta_3, \beta_2) &= 28.1394854
+\end{align}
+
+\clearpage
+
+\section*{e}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{anova.reduced} \hlkwb{=} \hlkwd{anova}\hlstd{(fit.noWeight)}
+\hlstd{anova.reduced}
+\end{alltt}
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Response: CO
+##           Df Sum Sq Mean Sq  F value    Pr(>F)    
+## tar        1 672.29  672.29 436.6261 5.323e-16 ***
+## nico       1   0.07    0.07   0.0438    0.8361    
+## Residuals 22  33.87    1.54                       
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+We have 
+
+\begin{align}
+\overline{SS}_R (\beta_1 \vert \beta_0) &= 672.2860929\\
+\overline{SS}_R (\beta_2 \vert \beta_0, \beta_1) &= 0.0675108
+\end{align}
+
+\section*{f}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{anova.noWeight} \hlkwb{=} \hlkwd{anova}\hlstd{(fit.noWeight)}
+\hlstd{anova.noWeight}
+\end{alltt}
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Response: CO
+##           Df Sum Sq Mean Sq  F value    Pr(>F)    
+## tar        1 672.29  672.29 436.6261 5.323e-16 ***
+## nico       1   0.07    0.07   0.0438    0.8361    
+## Residuals 22  33.87    1.54                       
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{equation}
+F_2 = 0.0438459
+\end{equation}
+
+\clearpage
+
+\section*{g}
+
+We want to know if regressing the CO value against tar and nicotine is better than no regressing at all. 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fit.nothing} \hlkwb{=} \hlkwd{lm}\hlstd{(CO} \hlopt{~} \hlnum{1}\hlstd{)}
+\hlstd{anova.nothing} \hlkwb{=} \hlkwd{anova}\hlstd{(fit.nothing)}
+\hlstd{SSres.nothing} \hlkwb{=} \hlstd{anova.nothing[}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{]}
+\hlstd{r} \hlkwb{=} \hlnum{2}
+\hlstd{f_last} \hlkwb{=} \hlstd{((SSres.nothing} \hlopt{-} \hlstd{SSres.noWeight)} \hlopt{/} \hlstd{r)} \hlopt{/}
+          \hlstd{(SSres.noWeight}\hlopt{/}\hlstd{(n}\hlopt{-}\hlstd{k}\hlopt{-}\hlstd{r))}
+\hlstd{f_last}
+\end{alltt}
+\begin{verbatim}
+## [1] 198.4863
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+ 
+
+
+\end{document}

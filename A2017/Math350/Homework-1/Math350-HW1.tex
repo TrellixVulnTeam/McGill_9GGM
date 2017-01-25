@@ -1,0 +1,144 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+
+
+%Math shortcuts
+\newcommand{\vout}{v\ft{out}}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math350}\\
+			\text{Graph theory}\\
+			\vspace{0.5cm}
+			Homework I
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			Jan Volec
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	
+	\section{}
+	a) True\\
+	Let G be a graph with $\vert V(G) \vert \ge 2 $. We want to prove that there exists at least one pair of vertices in G that have the same degree. We argue by contradiction. Assume not, then all the vertices have distinct degree.
+	\begin{align*}
+		\text{Let } k= \vert V(G) \vert
+	\end{align*}
+	Then if all the vertices have different degree we can enumerate the degrees as follows:
+	\begin{align*}
+		v_i \in V(G) \text{ with } \deg(v_i) = i \text{ and } 0 \leq i \leq n-1
+	\end{align*}
+	But if  $\deg v_{n-1} = n-1$ then it is connected to all the other edges, so there cannot be an edge with degree zero. $\Rightarrow \Leftarrow$\\[2ex]
+	b) False\\
+	Consider the graph consisting of two triangles ${u,u_1,v}$ and ${w,w_1,v}$ where the edges thus described are the only ones.\\[2ex]
+	c) True\\
+	Let $C_1$ be the cycle containing e and f and $C_2$ be the one containing f and g. We will build the cycle containing e and g. Let $\{u_i\}$ and $\{v_i\}$ respectively denote the vertices of $C_1$ and $C_2$. Let $u_1$ be an endpoint of e and $u_r$ be the last vertex of $C_1$ not in $C_2$. Then $u_1...u_r$ is obviously a path. For the next vertex we get on $C_2\backslash C_1 $. Extend the path until we cross the edge g and then continue until we get a vertex, say $v_l$, which is the last in $C_2$ but not in $C_1$. We then get on $C_1 \backslash C_2$ and continue until we get to the other endpoint of e. 
+	
+	Notes : 
+	
+	The second part of the cycle (when get back on $C_1$) arrives at the other endpoint of e because we have skipped f, the most simple case being when $V(C_1) \cap V(C_2)$ is the endpoints of f. 
+	
+	Also we are able to extend the path on $C_2\backslash C_1$ and $C_1 \backslash C_2$ to go through g because otherwise g would be in $C_1$ already.
+	\\[2ex]
+	d)True\\
+	Consider $T-v$ with $\deg v = k$. Now we have split the tree into k components. Call them $T_1,...T_k$. If some of them have only one vertex, let there be l of them. Consider now the $T_{l+1},...,T_{k}$ trees that have more than one vertex. Since they are trees they have at least two leaves. One of those leaves is therefore not $v$. Take one of those leaves and per tree $T_{l+1},...,T_{k}$. Let $w$ denote any of them. It is easy to see that
+	\begin{equation}
+		\deg_{T_i} w = \deg_T w \quad \forall w
+	\end{equation}
+	So they are leaves in T as well. So for we have $k-l$ leaves. Now consider the trees $T_k$ with only one vertex, this implies that their vertex was a leaf in T. There are l of them. Add the two set of leaves and we get k leaves.\\
+	\clearpage
+	\section{}
+	G is a graph that is not connected. Let it have k components. \\
+	Let $v,w \in G$
+	\begin{align*}
+		vw \notin E(G) &\Rightarrow vw \in E(\bar{G})\\
+		vw \in E(G) &\Rightarrow v,w \in V(F) \subset V(G) 
+	\end{align*}
+	With F being a component of G.\\
+	\begin{align*}
+		&\exists \, u \quad s.t. \quad uv ,uw \notin E(G)\\
+		&uv,uw \in E(\bar{G}) \\
+		&\therefore u \sim_w w \text{ in } \bar{G} 
+	\end{align*}
+	\section{}
+	
+	Let C be the cycle of minimal length in G. We argue by contradiction. Assume it is longer than $2k+1$. Let $\{v_1,...,v_{r}\}$ be the ordered list of the vertices in C and let P denote the path of length k between $v_1$ and $v_{k+1}$. Since the cycle has length at least $2k+2$ then the path from $v_{k+1}$ back to $v_1$ is at least $k+2$. Which means that the path from $v_{k+1}$ to $v_r$ is at least $k+1$. But there should exist a path from $v_{k+1}$ to $v_{r}$ of length k disjoint from P by assumption. So the cycle was not minimal hence we derive a contradiction.
+	
+	\section{}
+	
+	Let $P_1$ and $P_2$ denote two paths in G of length k. Express their edges as $P_1 = {u_1,...,u_r}$ and $P_2 = v_1,...,v_r$ with $r= k+1$. We argue by contradiction and so assume that they are disjoint. Since G is connected there exists a path from $v_1$ to $u_i$ for some $i$. Let Q denote such a path. Let $v_j$ be the last vertex in Q and in $P_2$. $P_2$ is a path so $v_1,...,v_j \subset P_2$ is a subpath of Q. 
+	\begin{align*}
+		Q = v_1,...,v_j,\{\zeta\},u_i 
+	\end{align*}
+	Where $\{\zeta\}$ is the set of vertices outside both $P_1$ and $P_2$. \\
+	i) \begin{align*}
+		\zeta_r \notin P_1,P_2 \quad \forall \quad r\in \mathbb{N}\\
+		i<j \Rightarrow v_1,...,v_j,\{\zeta\},u_i,...,u_k \text{ is a path with length more than k}\\
+		j<i \Rightarrow v_1,...,v_j,\{\zeta\},u_i,...,u_1 \text{ is a path with length more than k}\\
+	\end{align*}
+	ii) $\nexists$ $\zeta \notin P_1 \Rightarrow$, then consider the preceding argument without the zetas and we still obtain a path with length larger than k. 
+	
+	\clearpage
+	
+	
+	\section{}
+	
+	We use induction, the base case is trivial for order 3 since we have only two possible connected subgraphs that are not just a vertex. Consider the tree with order 4, we get at least 2 leaves and it is easy to see that if we choose a set of subgraphs that have a not empty intersection pairwise, then the intersection of all of them is not empty.
+	For induction  now assume that for a all trees T' of order n-1 whenever
+	\begin{align}
+		V(T'_i) \bigcap V(T'_j) \neq \emptyset \quad \forall \quad  1 \leq i,j \leq k \qquad \Rightarrow \quad  \bigcap_{i=1}^{k}V(T'_i)\neq \emptyset
+	\end{align}
+	For all $T'_i$ that are connected subgraphs of T'. \\
+	Now consider the tree T of order n with 
+	\begin{align}
+		V(T_i) \bigcap V(T_j) \neq \emptyset \quad \forall \quad  1 \leq i,j \leq k
+	\end{align}
+	For all $T_i$ that are connected subgraphs of T. 
+	Let v be a leaf of T. Then obviously (3) still holds for T- v:
+	
+	In a tree every vertex is connected to another via a unique path. Therefore if a leaf is in the intersection of two connected subgraphs, then the vertex adjacent to it, say u, is also in the intersection. 
+	
+	Well then by the induction hypothesis we have that (2) holds for T-v.  As we have just seen if v is in the intersection of two trees then so is u and so adding v will not affect the property stated in (2).
+	
+	
+	
+	
+	
+	
+\end{document}

@@ -1,0 +1,166 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{enumerate}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+\newcommand{\at}[2][]{#1|_{#2}} % evaluate at 
+
+
+%Math shortcuts
+\newcommand{\vout}{v\ft{out}}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math 417}\\
+			\text{Mathematical Programming}\\
+			\vspace{0.5cm}
+			Homework X
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			Tim Hoheisel
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	
+	\section{Gradient of quadratic function}
+	
+	Let $f: \mathbb R^n \rightarrow \mathbb R$ be defined by 
+	\begin{equation}
+		f(x) = \frac{1}{2}x\tran M x + c\tran x
+	\end{equation}
+	where $M \in \mathbb R^{n\times n}$ is a matrix not necessarily symmetric and $c\in \mathbb R^n$. Compute the derivative of $f(x)$. We will first prove the following lemma. It makes the computation direct and allows us to forbade partial derivatives in those cases in the (near) future.\\
+	\underline{Lemma}: Let $g(x) := x\tran A x$ for some real square matrix $A$. Then the derivative of $g(x)$ is $x\tran (A + A\tran)$\\
+	\underline{Proof}: \\
+	First of all we notice that $f(x)$ can be rewritten as follows 
+	\begin{equation}
+		f(x) = \sum_{i=1}^{n} \sum_{j=1}^{n} a_{ij} x_i x_j 
+	\end{equation} 
+	And thus:
+	\begin{equation}\label{partial}
+	\frac{\partial f}{\partial x_k} = \sum_{i=1}^{n}a_{kj} x_j + \sum_{j=1}^{n} a_{ik} x_i = \langle x, a_k + a'_k \rangle
+	\end{equation}\\[2ex]
+	With $a_i$ and $a'_j$ denoting the ith row and the jth column of $A$ respectively. From \ref{partial} we have that 
+	\begin{align}
+		\nabla f(x) &= \left(\langle x,a_1 + a'_1 \rangle, \ldots , \langle x, a_n +  a'_n\rangle \right)\\
+		&= \langle x, (a_1 + a_1', \ldots, a_n + a'_n)\rangle\\
+		&= \langle x, (a_1, \ldots, a_n)\rangle + \langle x, (a'_1, \ldots , a'_n)\rangle \\
+		&= x\tran A\tran  + x\tran A = x\tran (A + A\tran)
+	\end{align}
+	$\blacksquare$\\
+	This lemma with the obvious fact that $\nabla c\tran x = c\tran$ gives us:
+	\begin{equation}
+		\nabla f(x) = \frac{1}{2}x\tran (A + A\tran) + c\tran 
+	\end{equation}
+	\clearpage
+	
+	\section{Linear least squares problem}
+	For $A\in \mathbb R^{m\times n}$ and $b\in \mathbb R^m $ consider
+	\begin{equation}\label{ls}
+		\min _{x\in \mathbb R^n} f(x) := \frac{1}{2} \norm{Ax - b}_2^2
+	\end{equation}
+	\begin{enumerate}[a)]
+		\item 
+		\underline{Claim}: $\mathrm{im} (A\tran A) = \mathrm{im} A\tran $\\
+		\underline{Proof}: We know from basic linear algebra that the images of any two matrices that live in the same space are the same if and only if their rank are equal. We prove this for $A$ and $AA\tran$. Let $x\in \mathbb R^n$ such that  
+		\begin{equation}\label{aat}
+			(AA\tran) x  = 0 \quad \iff \quad x\tran (AA\tran)x = 0 \quad x \neq 0
+		\end{equation}
+		But be construction we know that 
+		\begin{equation}
+			x\tran (AA\tran)x = \norm{A\tran x}_2
+		\end{equation}
+		Hence \ref{aat} implies that a vector is in the kernel of $AA\tran$ if and only if it is in the kernel of $A\tran$. Hence they have the same rank and the proof is complete.\\
+		$\blacksquare$
+		
+		\item \underline{Claim}: f is convex\\
+		\underline{Proof}: First we note that the mapping $ x \mapsto Ax - b$ is affine and therefore convex which means that its image is a convex set. Moreover we know scaling a set does not affect convexity. So it remains to show the operation $\norm . _2^2 $ is a convex function. We have shown in the previous assignment "a continuous, twice differentiable function of several variables is convex on a convex set if and only if its Hessian matrix is positive semidefinite on the interior of the convex set."\footnote{wikipedia}. Let us find the Hessian of the squared euclidean norm. 
+		\begin{align}
+		f(x) &:= \sum_{i=1}^{n}x_i^2 \\[1ex]
+		\frac{\partial}{\partial x_i}f(x)  &= \frac{\partial}{\partial x_i}\sum_{k=1}^n x_k^2 = 2x_i\\[2ex]
+		\nabla f(x) &= \sum_{i=1}^{n}2x_i e_i \quad \Rightarrow \quad 
+		H(f(x)) = 2I
+		\end{align} 
+		Hence the Hessian is clearly positive definite. And the proof is complete. To sum up: we disregard the scaling, we consider the composition of the squared eulidean norm with an affine mapping. The image of any affine mapping is convex and the euclidean norm with a convex set as support is a convex function. \\
+		$\blacksquare$
+		\clearpage
+		
+		\item The last claim is that the problem in \ref{ls} always has a solution and that it is unique if the matrix $A$ has full rank.\\[2ex]
+		\underline{Claim}: There is always a solution to the problem.\\
+		\underline{Proof}: We find the gradient of the function:
+		\begin{align*}
+			f(x) :&= \norm{Ax- b}_2^2\\[2ex]
+				  &= \norm{Ax}^2 + \norm b ^2 - 2\langle Ax,b \rangle\\[2ex]
+				  &= x\tran A\tran A x - 2 (Ax)\tran b + b\tran b
+		\end{align*}
+		We apply the basic rules of matrix calculus to get
+		\begin{align}
+			\nabla f(x) = 2 A\tran A x  - 2A\tran b = 0
+		\end{align}
+		Hence the set of solutions is defined by the next set of equations:
+		\begin{equation}
+			A\tran A x = A\tran b
+		\end{equation}
+		Moreover as we have shown that the image of $A\tran$ is the same as the image of $AA\tran$  it follows directly that there is always an $x\in \mathbb R^n$ that fulfills the above equations. In other words $A\tran b$ is in the image of $AA\tran$ so by definition of the image we know there exists an $x$ such that $AA\tran x = A\tran b$\\
+		$\blacksquare$ \\[2ex]
+		\underline{Claim}: The solution is unique whenever $A$ has full column rank. \\
+		\underline{Proof}: 
+		$A$ has full column rank  so $AA\tran$ is positive definite  so it is invertible. Thus we can solve for $x$ in the following way:
+		\begin{equation}\label{normal}
+		x = (AA\tran)^{-1} A\tran b
+		\end{equation}
+		and the solution is unique because we are solving a matrix equation of the form $\hat A x = y$ where $\hat A = AA\tran$ and $y = Ab$ by inverting $\hat A$.\\
+		$\blacksquare$
+		
+		\clearpage
+		
+		
+		\section{KKT conditions}
+		\begin{enumerate}[a)]
+		\item
+		\clearpage
+		\item
+		\underline{Claim}: If $\bar x$ solves the optimality conditions described above then it solves the general quadratic problem.\\
+		\underline{Proof}: First let us say that if we can solve the conditions described above then clearly the feasible set is not empty as some of the conditions are exactly the feasibility conditions $Bx = b$ $Ax \leq a$. Moreover we have that the gradient is $Qx + c$ and hence the Hessian is just $Q$, positive semi-definite by assumption. The objective function is continuous over its feasible set which is compact (a polyhedron is generally) so since the Hessian ($Q$) is positive semi-definite the problem is convex. Finally
+		\begin{enumerate}
+			\item A point is a local  minimizer if and only if it respects the optimality conditions thus $\bar x$ is a local minimizer
+			\item Every local minimizer is a global minimizer since the problem is convex
+		\end{enumerate}
+		Hence $\ bar x$ is a global minimizer if it respects the optimality conditions described above, which is another way to say it solves the problem.\\
+		$\blacksquare$
+		\end{enumerate}
+
+	\end{enumerate}
+\end{document}

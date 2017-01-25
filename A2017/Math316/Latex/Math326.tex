@@ -1,0 +1,70 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+
+
+%Math shortcuts
+\newcommand{\vout}{v\ft{out}}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math326}\\
+			\vspace{0.5cm}
+			Non linear dynamics
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	\section*{Introduction}
+	
+	Nonlinear Dynamics $\equiv$ Dynamical systems
+	We are interested in systems which change over time
+	
+	Two types of dynamical system of interest:
+	\begin{enumerate}
+	\item Continous dynamical systems defined by ode s
+	\item Discrete dynamical systems defined by a map  
+	\end{enumerate}
+	
+Examples of Continuous Dynamical Systems
+
+\begin{enumerate}
+	\item Exponential growth and decay
+	Consider \begin{align*}
+		\text{Consider  } \dot{x} =& \lambda x  \quad x \in R
+	\end{align*}
+	
+	Interested in behaviour of solution $x(t)$ on real line as $t \right \infty \, or \, t\right infty$ 
+	Lambda is constant. Suppose t is greater than zero
+\end{enumerate}
+\end{document}

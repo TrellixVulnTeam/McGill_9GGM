@@ -1,0 +1,195 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{enumerate}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+
+
+%Math shortcuts
+\newcommand{\vout}{v\ft{out}}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math417}\\
+			\text{Mathematical Programming}\\
+			\vspace{0.5cm}
+			Homework IV
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			Tim Hoheisel
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	
+	\section{Completing the proof of the f. theorem}
+	
+	Let $\{J_i\}$ denote the set of subsets of $\{1,...n\}$ with $\abs{J}=m$ and such that $a_j$ with $j\in J_i$ are linearly independent $\forall J_i$
+	Also let $A^i$ be the matrix
+	\begin{equation*}
+	\begin{pmatrix}
+	a_j\tran\\.\\.\\.	\end{pmatrix} \text{ with } \quad j \in J_i
+	\end{equation*}
+	Then there exists a unique point, say $\bar x$ such that $A^i\bar x=b$ because by construction it has full rank. Therefore for all $J_i$ there exists only one associated BFS. Moreover there is only a finite number of $J_i$ so there can only be a finite number of BFS.
+	
+	\vspace{2ex}
+	\section{Derivation of the dual problem}
+	
+	Here we have two cases
+	\begin{enumerate}[i)]
+		\item $v\ge 0$
+		\begin{equation*}
+			\inf \{v\tran x \,\vert \, x\ge 0 \quad v \ge 0 \} = 0
+		\end{equation*}
+		\item $v_i < 0$ for some i
+		\begin{equation*}
+			\inf \{v\tran x \, \vert \, x\ge 0 \} = - \infty
+		\end{equation*}
+		The first case is quite obvious. The support the second we simply say that we can we make the ith components of x go to infinity and keep the others null. So the infinimum is unbounded.
+	\end{enumerate}
+	\clearpage
+	\section{Dual of the dual is the primal}
+	We start with the dual problem as denoted in the course notes.
+	\begin{align}
+		\max \,b\tran y \qquad A\tran y \leq c\\[2ex]
+		&\iff -\min-b\tran y \qquad A\tran y +s = c \qquad s\geq 0\\
+		&\iff -\min b\tran (y^- - y^+) \qquad A\tran(y^+ - y^-) + s = c
+	\end{align}
+	Now we have split y to get restrictions on it and introduced a slack variable which must be positive so we have 
+	\begin{equation}
+		y = y^+ - y^- \qquad y^+, y^-,  s \geq 0
+	\end{equation}
+	Now we want to express the last problem in standard form. We construct the new vectors z and  $\hat b$ and the new matrix $\hat A$\\[2ex]
+	\begin{equation}
+		z = \begin{pmatrix} y^+ \\ y^- \\s \end{pmatrix} \qquad
+		\hat A = \begin{pmatrix} A\tran &\vert -A\tran &\vert I_n\end{pmatrix}
+		\qquad \hat b \tran = \begin{pmatrix} -b\tran & b\tran  & 0_n \end{pmatrix}
+	\end{equation}
+	\\[2ex]
+	We mention the dimensions of these new objects. 
+	\begin{equation}
+		\hat A \in \mathbb{R}^{n\times 2m+n} \qquad s \in \mathbb{R}^{2m+n}
+		\qquad z \in \mathbb{R}^{2m+n} \qquad \hat b \in \mathbb{R}^{2n}
+	\end{equation}
+	We can now rexpress (1) as follows 
+	\begin{equation*}
+		- \min \hat b\tran z \qquad \hat A z = c\\
+	\end{equation*}
+	And we can now take its dual 
+	\begin{align*}
+		\mathcal{D} : \qquad -&\max c\tran \xi  \qquad \hat A \tran \xi \leq \hat b\\[2ex]
+		\iff &\min  c\tran (-\xi) \qquad \hat A (-\xi) \geq -\hat b
+	\end{align*}
+	
+	Now let's take a look at  the constraints
+	\begin{equation}
+		\begin{pmatrix}
+		A\\
+		-A\\
+		I_n
+		\end{pmatrix}
+		-\xi =  \begin{pmatrix}
+		b\\
+		-b\\
+		0_n 
+		\end{pmatrix}
+	\end{equation}
+	Which we can break down into 
+	\begin{equation}
+		A(-\xi) \geq  b \qquad -A(-\xi) \geq -b \qquad -\xi \geq 0
+	\end{equation}
+	Now let $x = -\xi \geq 0$. We can see from the above reformulation that the two matrix inequalities yield an equality and so we have the standard form of the primal, namely:
+	\begin{equation}
+		\min c\tran x \qquad Ax = b \qquad x \geq 0 
+	\end{equation}
+	And so we have shown the dual of the dual is indeed the primal
+	
+	\clearpage
+	
+	\section{Generalized duality}
+	\subsection{Weak duality}
+	
+	\begin{align*}
+		q(\lambda , \mu ) = \inf_{x \in \mathbb{R}^n} L(x, \lambda, \mu)\\[2ex]
+	\end{align*}
+	Let $\tilde{x}$ be a feasible point and $\lambda \geq 0 $ then we have
+	\begin{align}
+		\xi(x) = \lambda \tran g(x) + \mu\tran h(x) \leq 0 
+	\end{align}
+	Since $L(x,\lambda,\mu) = f(x) + \xi(x)$\\[2ex]
+	We immediately have that 
+	\begin{equation*}
+		q(\tilde x , \lambda, \mu) = \inf \{L(\tilde x,\lambda,\mu) \vert \lambda \geq 0 \} \leq L(\tilde x,\lambda ,\mu) \leq f(\tilde x)
+	\end{equation*}
+	
+	\subsection{Failure of strong duality}
+	We find an example of a convex function where there is a duality gap. Consider the following optimization problem:
+	\begin{align*}
+		\min f(x) = \min \, e^{-x_1} \\[2ex]
+		g(x) &= \frac{x_1^2}{x_2} \leq 0\\
+		h(x) &= 0
+	\end{align*}
+	With the restriction that $x_2$ is strictly positive.\\
+	Then let 
+	\begin{align*}
+		L(x,\lambda,\mu) = f(x)+ \lambda g(x)
+	\end{align*}
+	And define 
+	\begin{align*}
+		q(\lambda,\mu) = \inf_{x\in \mathbb{R}^2}L(x,\lambda,\mu)
+	\end{align*}
+	Then if $\lambda$ is strictly negative q is unbounded and if it is greater or equal to zero it is null. So its supremum is also null. The dual problem becomes trivial, namely find the maximum of zero. But $p^*=1$. So we have
+	\begin{equation}
+		\sup \{q(\lambda,\mu) \, \vert \, \lambda \geq  0 \} = 0 < \inf \{f(x) \, \vert \, g(x) \leq 0, \, h(x) = 0  \} = 1
+	\end{equation}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+\end{document}

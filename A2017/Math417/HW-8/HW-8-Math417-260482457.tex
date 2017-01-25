@@ -1,0 +1,268 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{enumerate}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+\newcommand{\at}[2][]{#1|_{#2}} % evaluate at 
+
+
+%Math shortcuts
+\newcommand{\vout}{v\ft{out}}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math 417}\\
+			\text{Mathematical Programming}\\
+			\vspace{0.5cm}
+			Homework VIII
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			Tim Hoheisel
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	
+	\section{Examples of locally Lipschitz functions}
+	Find a function $f:\mathbb R \rightarrow \mathbb R$ which
+	\begin{enumerate}[(a)]
+		\item is continuous but not locally Lipschitz continous. 
+		\begin{align*}
+			\text{Let }f(x) : = x^{1/3}
+		\end{align*}
+	Suppose $x \geq 0$. Then  we have that $\vert f(x) - f(0) \vert  = f(x)$. To be locally Lipschitz we should be able to find $L>0$  and neighborhood $B_\epsilon (0)$ such that if $x \in B_\epsilon(0)$ then we have that$f(x) \leq  L\times x$. Let's look at what happens for x smaller than 1. If we choose any $x  < \frac{1}{\sqrt{L}^3}$ for some $\delta >0$ we immediately have $f(x) > Lx$ which contradicts local Lipschitz continuity. 
+	
+	\item is locally Lipschitz but not differentiable 
+	\begin{align*}
+		\text{Let } f(x): = \abs x
+	\end{align*}
+	It is clear that $f(x)$ is not differentiable. It is also quite clearly locally Lipschitz everywhere except at the origin since it consists of two linear parts. It remains to show that it is Lipschitz at 0. Well but around the origin every $L >1 $ will work since $\vert f(x) - f(0) \vert = f(x) = \abs x$. Moreover $\vert x - 0 \vert = \abs x$. So clearly : 
+	\begin{equation*}
+		\vert f(x) - f(0) \vert \leq L \vert x - 0 \vert \quad \forall L \geq 1
+	\end{equation*}
+	
+	\end{enumerate}
+	
+	\clearpage
+	
+	\section{Solvability of central path conditions}
+	\vspace{0.5cm}
+	\begin{equation}\label{minimize}
+		\min \, x_1 + x_2 \quad \text{s.t.} \quad x_1+x_2 \geq 1, \ x_1,x_2\geq 0
+	\end{equation}
+	\begin{enumerate}[(a)]
+		\item Determine all solutions of \ref{minimize}.
+		It is easy to see that since $c = A$ all the points where the constraint is active are solutions of the LP. The two BFS are when either of the two variables are 0. 
+		\item Transform \ref{minimize} into standard form
+		We only need to add a slack variable to bring the problem into standard form. Let $x_3 \geq 0$. Then \ref{minimize} becomes
+		\begin{equation}\label{standard}
+			\min \, x_1 + x_2 \quad \text{s.t.} \quad x_1+x_2 - x_3 = 1, \  x_1,x_2,x_3 \geq 0
+		\end{equation}
+		So the matrix $A$ in this case is only a row vector. 
+		\item For $\tau >0 $ determine the solution $(x_\tau, y_\tau, z_\tau)$ of the central path conditions with the reformulation from (b). 
+		Let's look at the equations we have:
+		\begin{align}
+			1 &=x_1 + x_2 - x_3 \label{ctx} \\ 
+			\tau &= x_i s_i\\
+			0 &< x,s\\
+			1 &= y + s_1 \label{y1}\\ 
+			1 &= y + s_2 \label{y2}\\ 
+			0 &= y + s_3 \label{y3}
+		\end{align}
+	From \ref{y1} and \ref{y2} we have that $s_1 = s_2$ and from \ref{y3} we have that $s_3 = -y$. Putting these two together we have $s_3 = s_1 - 1$. This gives us an additional constraint : $s_1 >1$. We can now reformulate \ref{ctx} as follows:
+	\begin{equation}\label{eq:1}
+	\frac{2\tau}{s_1} - \frac{\tau}{s_1 - 1} = 1 \quad s_1 >1
+	\end{equation}
+	This equation in turn gives us a quadratic and we now express the possible values of $s_1$ in terms of $\tau$
+	\begin{equation}\label{eq:2}
+		s_1 =\frac{1+\tau \pm \sqrt{ \tau^2 - 6\tau +1}}{2}
+	\end{equation}
+	The discriminant has two roots: $\tau = 3 \pm 2\sqrt{2}$ and is negative between them. Moreover we have a constraint on $s_1$ which is that is has to be strictly greater than one, hence :
+	\begin{equation}\label{secondConstraint}
+		\tau \pm \sqrt{ \tau^2 - 6\tau +1} >1 
+	\end{equation}\\
+	Which gives us the constraint $\tau > 3 + 2\sqrt2$ hence $s_1 > 2 + \sqrt2$. 
+	\clearpage 
+	Since the system is uniquely determined we have all the information we need for the solution of the central path conditions. From $s_1$ we first immediately get $s_2$ and $s_3$ which in turn give us $x_1, x_2$ and $x_3$. Finally the y's are uniquely determined since the matrix has only one row, it can only have full row rank. Actually y is a scalar. We do not explicitly write $(x_\tau, y_\tau, s_\tau)$ as this seems quite unnecessary and not very neat. 
+	\item As $\tau \rightarrow 0$ we cannot use the mapping found above as it is not defined for values of $\tau$ smaller than the constraint we have imposed on it. So we stop tripping and let $s_1$ take imaginary values as $\tau$ goes to 0. Then $s_1 \rightarrow 1$ hence so does $s_2$ and $s_3 \rightarrow 0$. Thus $x_1,x_2 = 0$ and $x_3 = -1$ and finally $y = -1$. Which is a bad solution since our $s_i$ are non zero, which is not good, I think.
+	\end{enumerate}
+	
+	\clearpage
+	
+	\section{Strictly convex functions}
+	A convex function $f: \mathbb R^n \rightarrow \mathbb R \cup \{+\infty\}$ is called \textit{strictly convex} on the convex set $C \subset \mathrm{dom} f$ if 
+	\begin{equation}\label{strict}
+		f(\lambda x+ (1-\lambda)y) < \lambda f(x) + (1-\lambda)f(y) \quad (x,y \in C, x\neq y, \lambda \in (0,1))
+	\end{equation}
+	\begin{enumerate}[(a)]
+		\item If $f$ is strictly convex on $\mathrm{dom} f \neq \emptyset $ then argmin $f$ is either empty or a singleton. We will derive a proof by contradiction. Assume $f$ is a strictly convex function on a set $C\subset \mathbb R^n$ and that there exists two distinct minimizers $x_1$ and $x_2$. WLOG assume that $f(x_1) \leq f(x_2)$. 
+		\begin{align}
+			\lambda f(x_1) &\leq \lambda f(x_2) \quad \forall \ \lambda \in (0,1)\\
+			\lambda f(x_1) + (1-\lambda)f(x_2) &\leq \lambda f(x_2) + (1-\lambda)f(x_2)\\
+			\lambda f(x_1) + (1-\lambda)f(x_2) &\leq f(x_2) \label{beforestrict}
+		\end{align}
+		Now we apply strict convexity to \ref{beforestrict} to get 
+		\begin{equation}\label{contradiction}
+			f(\lambda x_1 + (1-\lambda)x_2) < f(x_2) \quad \forall \ \lambda \in (0,1)
+		\end{equation}
+		This is the desired contradiction. The strict inequality above means that every point between $x_1$ and $x_2$ has an objective value strictly less than $f(x_1)$. But this means: 
+		\begin{equation}
+			\nexists \ \epsilon > 0 : f(x) \geq f(x_1) \quad \forall \ x\in B_\epsilon(x_1)
+		\end{equation}
+		This clearly contradicts the assumption that $x_1$ was a minimizer in the first place.\\
+		$\blacksquare$
+		
+		\item Suppose $C$ is open and f is continuously differentiable on $C$. Then $f$ is strictly convex on $C$ iff
+		\begin{equation}\label{claim}
+			f(x) > f(\bar x) + \nabla f(\bar x) \tran (x-\bar x) \quad (x,\bar x \in C, x\neq \bar x)
+		\end{equation}
+		 By the mean value theorem we know there exists a point $\tau_\lambda \in \mathbb R^n$ on the line between $\bar x$ and $\bar x + \lambda (x- \bar x)$ such that
+		\begin{align}
+			\lambda \nabla f(\tau_\lambda )\tran (x - \bar x) &= f(\bar x + \lambda (x - \bar x))  - f(\bar x)\\
+			&<\lambda f(x) + (1-\lambda)f(\bar x) - f(\bar x)\\
+			&= \lambda(f(x) - f(\bar x))
+		\end{align}
+		By construction we have $\tau_\lambda \rightarrow \bar x$ as $\lambda \rightarrow 0$. Now since f is continuously differentiable we have that $\lim_{\tau_\lambda \rightarrow \bar x} \nabla f(\tau_\lambda) = \nabla f(\bar x)$. This with the inequality derived previously directly yields:
+		\begin{equation}
+			f(x) - f(\bar x) > \nabla f(\bar x) \tran (x-\bar x)
+		\end{equation}
+		This gives us "$\Rightarrow$"
+		
+		
+		For the other direction, i.e. if \ref{claim} holds then f is convex, we take two arbitrary points in $C$, say $x$ and $y$. Moreover let $\lambda \in (0,1)$ and define $z := \lambda x+ (1-\lambda)y$. Then we have 
+		\begin{align}
+			f(x) - f(z) > \nabla f(z)\tran (x-z) \label{first} \\
+			f(y) - f(z) > \nabla f(z)\tran (y-z) \label{second}
+		\end{align}
+		We multiply \ref{first} and \ref{second} by $\lambda$ and $1- \lambda$ respectively and add them. The RHS cancels out and we are left with
+		\begin{align}
+			&\lambda f(x) + (1-\lambda)f(y) - f(z) \\
+			&= \lambda f(x) + (1-\lambda)f(y) - f( \lambda x+ (1-\lambda)y )\\
+			&> 0  
+		\end{align}
+		Which is the definition of strict convexity.\\
+		$\blacksquare$
+	\end{enumerate}
+	
+	
+	\clearpage
+	
+	\section{Log-barrier function}
+	
+	Let $lb : \mathbb{R}^n \rightarrow \mathbb R \cup \{+\infty \}$ be the log barrier function:
+	\begin{equation*}
+		\mathrm{lb}(x) := \begin{cases}
+		-\sum_{i=1}^{n} \log (x_i) \quad &\text{if} \quad x>0\\
+		\qquad +\infty &\text{else}
+		\end{cases}
+	\end{equation*}
+	\begin{enumerate}[(a)]
+		\item lb is continuously differentiable on dom$f$ with
+		\begin{equation}\label{firstClaim}
+			\nabla \mathrm{lb}(x) = - \begin{pmatrix} x_1^{-1} \\
+			\vdots\\
+			x_n ^{-1} \end{pmatrix} \quad (x>0)
+		\end{equation}
+		The proof of \ref{firstClaim} is quite direct from the definition of the gradient. Let f denote the log-barrier function as defined previously.
+		\begin{align*}
+			\nabla \mathrm{lb}(x) &= \sum_{i=1}^{n} \frac{\partial f}{\partial x_i} e_i\\[2ex]
+			&= \sum_{i=1}^{n} e_i \left( - \frac{\partial}{\partial x_i} \sum_{i=1}^{n} \log (x_i) \right)\\[2ex]
+			&=  -\sum_{i=1}^{n} e_i \times \frac{1}{x_i}
+		\end{align*}
+		The last line is just another way to write the RHS of \ref{firstClaim}. Moreover it is clearly continuous for $x\in \mathbb R^n >0$ where the last inequality is element wise. \\
+		$\blacksquare$
+		\clearpage
+		\item We use the fact that a function is strictly convex if and only if its Hessian is definite positive. The later fact is the first we prove since otherwise this approach wouldn't be very useful now would it.\\[2ex]
+		\underline{Claim}:
+		\begin{equation}\label{claim2}
+			\nabla ^2 \mathrm{lb}(x) > 0  \quad \forall \ x \in \mathbb R^n 
+		\end{equation} 
+		\underline{Proof}: \\
+		This is pretty direct from the gradient we have already derived. Since the partial of the log-barrier w.r.t. $x_i$ is $1/x_i$, clearly we have that :
+		\begin{equation}
+			\frac{\partial^2 f}{\partial x_i \partial x_j} = 0 \quad \text{whenever} \quad i\neq j	
+		\end{equation}
+		Moreover:
+		\begin{equation}
+			\frac{\partial^2 f}{\partial x_i^2 } = \frac{1}{x_i^2}
+		\end{equation}\\
+		This gives us all the entries of the Hessian which can be expressed as follows:
+		\begin{equation}\label{hessian}
+			\nabla ^2 \mathrm {lb}(x) = \mathrm{diag}(x)^{-2}
+		\end{equation}
+		Since the matrix is diagonal, we already have the eigenvalues given, namely $1/x_i^2$. Since these are clearly strictly positive for all $x\in \mathbb R$ we have that the Hessian is positive definite.\\
+		$\blacksquare$
+		\clearpage
+		Now only need to show that a function $f : \mathbb{R}^n \rightarrow \mathbb R \cup \infty$ is convex if and only if its Hessian is definite positive for all $x\in \mathbb R^n$. We need not worry about the domain since as proven in the last assignment if the function is convex on a domain and defined to take $\infty$ outside it, the extended function will still be convex. Now the domain of the log-barrier function is the positive orthant so we will only consider values of $x$ in this orthant. \\[2ex]
+		\underline{Claim} : Let f be a scalar field and have a positive definite hessian, then for all $x,y$ in the domain and $\lambda \in (0,1)$ we have that
+		\begin{equation}\label{claim5}
+			f(\lambda x + (1-\lambda)y) < \lambda f(x) + (1-\lambda)f(y)
+		\end{equation}
+		We reduce it to a 2 dimensional problem by parameterizing a line from x to y, which is just all convex combinations of those two points:
+		\begin{equation*}
+			g(\lambda) := f(\lambda x + (1-\lambda)y)
+		\end{equation*} 
+		With a little bit of matrix calculus we arrive at the expression of the second derivative of $g(t)$
+		\begin{equation}
+			g''(\lambda) = (x - y)\tran \nabla ^2 f(\lambda x + (1-\lambda)y)(x-y)
+		\end{equation}
+		Since the Hessian is definite positive we clearly have that $g(\lambda) >0$ for all $\lambda$.
+		Now let's take the Taylor expansion of $g$ around an arbitrary $\lambda$:
+		\begin{align*}
+			g(\mu) = g(\lambda) + (\mu - \lambda) g'(\lambda)  + \mathcal{O}(g''(\lambda))
+		\end{align*}
+		The fact that $g(\lambda)$ is positive definite allows us to write the following inequalities:
+		\begin{align}
+			g(0)  &> g(\lambda) + g'(\lambda)( 0-\lambda) \label{ineq:1}\\
+			g(1) &> g(\lambda) + g'(\lambda) (1-\lambda)\label{ineq:2}
+		\end{align}
+		Now we multiply \ref{ineq:1} by $\lambda$ and \ref{ineq:2} by $1-\lambda$ and them. This gives us:
+		\begin{equation}
+			g(\lambda) `< \lambda g(1) + (1-\lambda )g(0)
+		\end{equation}
+		Which is clearly just another way to write strict convexity.\\
+		$\blacksquare$
+		\item	Let $x_k$ be a sequence that is the in the domain for all k but goes to $\bar x$ which is on the boundary. Clearly the boundary of the domain is the surfaces that delimit the positive orthant. There are two cases, $x_k$ goes to the origin or $x_k$ has one of its components that goes to zero. If one of the $x_i$ goes to zero than $-\log x_i \rightarrow \infty$ and so $\mathrm{lb} \rightarrow \infty$. Also if $x_k$ goes to zero for all its components (origin) then the log-barrier function blows up even faster. In all cases log-barrier goes to infinity. Moreover log-barrier is defined to be $\infty$ outside its domain so clearly $\lim_{x_k\rightarrow \bar x} \mathrm{lb} (x) = \infty = f(\bar x)$ when $\bar x \in bd$. So it follows that the function is continuous on its domain.
+		$\blacksquare$
+	\end{enumerate}
+	
+	
+	
+	
+	
+	
+	
+	
+\end{document}

@@ -1,0 +1,181 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[english]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+
+
+
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+\newcommand{\trace}{\mathrm{trace}}
+
+\begin{document}
+		\begin{titlepage}
+			\begin{center}
+				\vspace*{1cm}
+				\textbf{Math 560}\\
+				\text{Optimization}\\
+				\vspace{0.5cm}
+				Homework I
+				
+				\vspace{1.5cm}
+				
+				\textbf{Frédéric Boileau}\\
+				\vspace{2cm}
+				Prof. 
+				Michael Rabbat
+				\vfill
+				\today
+				\thispagestyle{empty}
+			\end{center}
+		\end{titlepage}
+
+		\clearpage
+		
+		\section{}
+		Compute the gradient and Hessian of the Rosenbrock function
+		\begin{align*}
+			f(x) &= 100(x_2 - x_1)^2 + (1-x_1)^2\\[1ex]
+			\nabla f(x) &= (2(200x_1^3 - 200x_1x_2 + x_1 -1),200(x_2 - x_1^2))\\[2ex]
+			\nabla ^2 f(x) &= \begin{Bmatrix}
+			-400(x_2-x_1^2) + 800x_1^2 +2 & -400x_1\\
+			-400x_1 & 200
+			\end{Bmatrix}
+		\end{align*}\\
+		We now consider the point $x* = (1,1)$. We have shown that a necessary condition for a point to be a local minimizer of a function is that the gradient vanishes there. By direct substitution we can see that this is the case for $x^*$. Moreover\\
+		\begin{align}\label{1.condition}
+			\nabla f(x) = 0 \iff f_2(x) = 0 \iff x_1 = \pm \sqrt x_2  \quad x_2 > 0
+		\end{align}
+		We now show that the function is convex which means that is there is another local minimizer there must be in fact a whole neighborhood of local minimizers around $x^*$, which is obviously false by the continuity of the condition \ref{1.condition}. Let us look at the characteristic polynomial of the Hessian.\\
+		\begin{equation}
+			\rho (\lambda,x_1,x_2) = (200 - \lambda) (-400 (x_2-x_1^2) + 800 x_1^2 + 2 - \lambda) - 1600 x_1^2
+		\end{equation}\\
+		Now from \ref{1.condition} we have :
+		\begin{equation}
+			\rho = (200 - \lambda) ( 800 x_2 + 2 - \lambda) - 1600 x_2 \quad ,x_2 >0
+		\end{equation}
+		We can solve this last expression for lambda. It has two roots expressed in terms of $x_2$. In both cases $\lambda$ is positive  whenever $x_2$ is positive. This means the eigenvalues are positive for all $x \in \mathbb R^2$. Hence the Hessian is positive definite and the function is thus convex. As seen in class this means there is only one minimizer (both local and global), namely $x^*$.
+		
+		\clearpage
+		
+		\section{}
+		Let f be a convex function, show that the set of its global minimizers is convex. Let $\phi$ and $\theta$ be any two global minimizers. Clearly
+		\begin{equation}
+			f(\theta) = f(\phi) \leq f(x) \quad  \forall \ x\in X
+		\end{equation}
+		Moreover, by the definition of convexity we have that 
+		\begin{equation}
+			f(\lambda x + \mu y) \leq \lambda f(x) + \mu f(y) \quad \forall \ \lambda, \mu \in \mathbb R \quad x,y \in X
+		\end{equation}
+		Let $t \in (0,1)$
+		\begin{align*}
+			f(t \phi + (1-t)\theta) &\leq t f(\phi) + (1-t) f(\theta) \\
+			& = f(\theta) = f(\phi)
+		\end{align*}
+		Hence the set of global minimizers contains all it convex combinations which is equivalent to saying it is a convex set.
+		
+		\clearpage
+		
+		\section{}
+		Let $f : \mathbb R^n \rightarrow \mathbb R$ be twice continuously differentiable. Let $g(y) = f(Ay + b)$ for a given matrix $A \in \mathbb R^{n\times n}$ and vector $b \in \mathbb{R}^n$. 
+		\begin{equation}
+			D_i \ g(y) = f\left(\sum_i e_i \sum_j a_{ij} y_{j} + b \right)\\
+		\end{equation}
+		Define $x_i = \sum_j a_{ij}y_j + b$ and $a = Ay +b$. Then we can rewrite the expression above :
+		\begin{align}
+			\frac{\partial}{\partial y_i} g(y) &= \frac{\partial g(y)}{\partial x_i} \frac{\partial x_i}{\partial y_i}\\[2ex]
+			&= \frac{\partial f (\sum_i x_i +b)}{\partial x_i} \times \sum_i a_{ij}\\
+			&= \sum_i a_{ij}  \ D_i(f(y))\vert _a\\
+		\end{align}
+		We have the result, let us rewrite it in matrix notation:
+		\begin{align*}
+			\nabla g(y) &= \sum_j e_j \sum_i a_{ij} \ D_i(f(y))\vert_a\\[2ex]
+			& = A\tran \nabla f(y)\vert _a
+		\end{align*}
+		For the Hessian we simply iterate the procedure.
+		\begin{align}
+			D_i \ g(y) &= D_i (A\tran D_i f(y)\vert _a)\\[2ex]
+			&= A\tran (D_i D_i f(y) \vert_a)\\[2ex]
+			&= A\tran ( D_i (D_i f(y)\vert_a) \tran)\\[2ex]
+			&= A\tran (D_i (A\tran (D_i f(y))\tran \vert _a )\\[2ex]
+			&= A\tran D_i ^2 \ f(y)\tran \vert_a  \ A
+		\end{align}\\
+		Where the partial derivative has been treated as a linear operator and the transpose was taken for conformality. In matrix notation this gives the desired result, i.e. :
+		\begin{equation}
+			\nabla ^2 g(y) = A\tran \nabla ^2 f(y) \vert _a  \ A
+		\end{equation}
+		
+		\clearpage
+		
+		\section{}
+		Prove the following functions are convex. \\
+		First note that the second derivative is a special case of the Hessian and that $f''(x) \geq 0$ is equivalent to $\nabla ^2 f(x) \succeq 0$ for proving convexity. 
+		
+		\begin{itemize}
+			\item Let $f(x) = e^{ax} \Rightarrow f''(x) = a^2e^{ax} > 0 \quad  \forall x \in \mathbb R$ and hence the function is convex for all x
+			\item Let $f(x) = \norm x_2$, first we note that the norm is nonnegative for any real valued vector. Moreover squaring over positive values preserves monotonicity. Hence we can prove the relaxed statement $g(x) = \norm x _2 ^2$ is convex.
+		\begin{align}
+		g(x) &:= \sum_{i=1}^{n}x_i^2 \\[1ex]
+		\frac{\partial}{\partial x_i}g(x)  &= \frac{\partial}{\partial x_i}\sum_{k=1}^n x_k^2 = 2x_i\\[2ex]
+		\nabla g(x) &= \sum_{i=1}^{n}2x_i e_i \quad \Rightarrow \quad 
+		H(g(x)) = 2I \succ 0
+		\end{align}
+		\item The sum of two convex functions is convex. \\
+		\begin{align*}
+			f(z) &= f_1(z) + f_2(z) \\[2ex]
+			f(\lambda x + \mu y) &= f_1(\lambda x + \mu y) + f_2(\lambda x + \mu y)\\[2ex]
+			&\leq \lambda (f_1 + f_2)(x) + \mu(f_1 + f_2)(y) = \lambda f(x) + \mu f(y)
+		\end{align*}\\
+		
+		\clearpage 
+		
+		\item Suping over functions preserves convexity
+		Let $f(x) := \max \{f_1(x), f_2(x)\}$ where $f_1$ and $f_2$ are both convex functions from $\mathbb R^n $ to the reals. \\[2ex]
+		Let $\theta := \lambda x + (1-\lambda) x \quad \lambda \in (0,1)$
+		\begin{alignat*}{2}
+			f(\theta) &= \max \{f_1(\theta), f_2(\theta)\} 
+						\quad &&\text{definitions}\\
+					  &\leq \max\{\lambda f_1(x) + (1-\lambda) f_1(x), \lambda  f_2(x) + (1-\lambda) f_2(x)\}
+					  \quad && \text{convexity of } f_1 \text{ and } f_2\\
+					  &\leq \lambda \max \{f_1(x),f_2(x)\} + (1-\lambda)   \max \{f_1(x),f_2(x)\}
+					  \quad && \text{generalized triangle inequality}\\
+					  &= \lambda f(x) + (1-\lambda)f(x)
+		\end{alignat*}
+		Another neater proof is that a function is convex if and only if its epigraph is convex. A function defined by taking the pointwise supremum as for its epigraph the intersection of the epigraphs of the functions we're supping over. Hence $\mathrm{epi} f = \mathrm{epi} f_1 \cap \mathrm{epi} f_2$. Moreover intersection preserves convexity. So $\mathrm{epi} f$ is convex and hence f is. 
+		
+		\item Composition with affine mapping preserves convexity\\[2ex]
+		Let $h: \mathbb R^m \rightarrow \mathbb R^n $ be defined the following way: \\
+		\begin{equation*}
+		y \mapsto Ay + b \qquad A\in \mathbb R^{n\times m}, \ b \in \mathbb R^m \end{equation*}
+		h is an affine map. Let $f : \mathbb R^n \rightarrow \mathbb R$ be any convex function and define $g : = f \circ h$. We show that $g$ is a convex function.
+		\begin{alignat*}{2}
+			g(\lambda x + (1-\lambda)y) :&= 
+			(f\circ h) (\lambda x + (1-\lambda)y) \qquad && \lambda \in (0,1)\\
+			& = f(h(\lambda x + (1-\lambda)y)) \qquad &&\\
+			& = f(\lambda h(x) + (1-\lambda) h (y)) \qquad && \text{characteristic property of affine maps}\\
+			& \leq \lambda f(h(x)) + (1-\lambda )f(g(y)) \qquad &&\text{which is what we wanted to show}
+		\end{alignat*}
+		\end{itemize}
+
+		
+\end{document}

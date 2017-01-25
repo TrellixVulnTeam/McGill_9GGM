@@ -1,0 +1,169 @@
+\documentclass{article}
+
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{enumerate}
+
+\usepackage{mathtools,xparse}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+\newcommand{\at}[2][]{#1|_{#2}} % evaluate at 
+
+
+%Math shortcuts
+\newcommand{\vout}{v\ft{out}}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math 417}\\
+			\text{Mathematical Programming}\\
+			\vspace{0.5cm}
+			Homework IX
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			Tim Hoheisel
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	
+	\section{Optimality Conditions}
+	
+	For the standard linear program defined by the data $(A,b,c) \in \mathbb R^{m\times n} \times \mathbb R^m \times \mathbb R^n$ consider the optimality conditions:
+	\begin{align*}
+		A\tran y + s &= c\\
+		Ax &= b\\
+		x_i s_i & =0\\
+		x,s &\geq 0
+	\end{align*}
+	We want to show that the solution set of the above system of equations is convex. First let that solution be denoted by $\mathcal F$ and let $:w = (x,y,x) \in \mathcal F$. \\ \\
+	\underline{Lemma}: Cartesian product preserves convexity (finite vector spaces). Let $P_1$ and $P_2$ be convex sets in $\mathbb R^n$ and $\mathbb R^m$ and x and y elements of those sets respectively. Then quite clearly:
+	\begin{equation}
+		\lambda x + (1-\lambda)x \in P_1 \quad \mu y + (1-\mu)y\in P_2 \iff (x,y) \in P_1 \times P_2
+	\end{equation}
+	Now we convert the different conditions into different sets.
+	\begin{align*}
+		P_1 &:= \{ y \ \vert \ A\tran y = c-s\}   \quad \text{polyhedron so convex} \\[2ex]
+		P_2 &:= \{ x \ \vert \ Ax =b, \ x\geq 0 \}  \quad \text{polyhedron so convex}\\[2ex]
+		P &:=  P_1 \times \mathbb R^m \times P_2 \Rightarrow P \text{ is convex by the above lemma}
+	\end{align*} 
+	Now let $x,s\in \mathbb R^n$ and $x,s \geq 0$. Let $F \in \mathbb R^{n\times m\times  n}$ denote the set such that $x_i s_i = 0$ for all $i = 1 \ldots n$ where $x$ and s represent the first and last $n$ elements of any vector $w\in F$. We prove directly that $F$ is convex. Let $w \in F$:
+	\begin{align*}
+		\lambda w + (1-\lambda)w &= (\lambda x + (1-\lambda)x,0\ldots0,\lambda s + (1-\lambda)s)\\
+		(\lambda x_i + (1-\lambda)x_i)(\lambda s_i + (1-\lambda)s_i) &= 
+		\lambda^2 x_i s_i + 2(1-\lambda)\lambda x_i s_i + (1-\lambda)^2x_i s_i = 0\\
+	\end{align*}
+	Now we have seen that the set $F$ contains all its convex combinations so it is convex. Finally let $\mathcal F = P \cap F$. This set clearly convex by the preservation of intersection. Moreover it is the set of all possible solutions of the optimality conditions. 
+	
+	\clearpage
+	
+	\section{Linear equations in interior-points methods}
+	
+	We want to show that if 
+	\begin{equation}\label{larger}
+		\begin{pmatrix} 0&A\tran&I \\ A&0&0 \\ S&0&X \end{pmatrix} \Delta w = b
+	\end{equation}\\
+	has a solution $\Delta w = (\Delta x, \Delta y, \Delta s)$ then the components $\Delta x$ and $\Delta s$ are uniquely determined. Since we don't consider the other component we look at a smaller system of equations:
+	\begin{equation}
+		\begin{pmatrix} 0&I \\ A&0 \\ S&X \end{pmatrix} w' = b' 
+	\end{equation}
+	Where $b'$ is just the first and last $n$ elements of $b$. Clearly if there is a solution of the bigger system \ref{larger} there is one for the smaller one. We simply removed the second column as we don't care about $y$, it is not necessarily uniquely determined since we can't assume that $A\tran$ has full rank. Now we immediately have that $ \Delta s$ is uniquely determined since $I \Delta s $ has to be equal to the first $n$ elements of $b$. Moreover we have that $S \Delta x + X \Delta s$ is equal to the $n$ last elements of $b$. Let $r$ denote the last n elements of $b$:
+	\begin{align}
+		S \Delta x + X \Delta s &= r\\
+		\iff S \Delta x &= r - X \Delta s \label{RHS}
+	\end{align}
+	Now since $\Delta s$ was shown to be uniquely determined the whole RHS of \ref{RHS} is uniquely determined. Moreover $S$ is a diagonal positive definite matrix. It is therefore invertible with its inverse being a diagonal matrix with $(s^{-1})_{ii} = (s_{ii})^{-1}$. We have no divsion by zero problem since positive definite means eigenvalues are strictly bigger than zero and the eigenvalues of a diagonal matrix are its diagonal entries. Therefore $\Delta x$ is uniquely determined. \\
+	We want to emphasize the fact that removing the second column had no impact on the reasoning as by assumption the first matrix equation had a solution and therefore we can retrieve the $y$'s determined by $A\tran \Delta y + I\Delta s = c$. In other words the $y$'s are dependent on $s$ which is uniquely determined and not the other way around.
+	
+	
+	\clearpage
+	
+	
+	\section{Central path conditions}
+	Now let $\tau >0$
+	\begin{align*}
+		\varphi_\tau (a,b) = 0 \\
+		&\iff a + b - \sqrt{(a-b)^2 + 4\tau } = 0\\
+		&\iff (a+b)^2 = (a - b)^2 + 4\tau \quad \\
+		&\iff ab = \tau
+	\end{align*}
+	And the equivalence when squaring is guaranteed by the sign restrictions on a and b. Let's define $\Phi$
+	
+	
+	\begin{equation}
+		\Phi _\tau (x,y,s) := (Ax-b) + (A\tran y + s - c) + \sum_{i=1}^{n}\varphi_\tau(x_i,s_i)
+	\end{equation}
+	The first two terms are the usual feasibility conditions. Moreover since central path conditions require $\tau >0$ and $x,s\geq 0$, we immediately have $x ,s >0$. Each $\varphi_\tau(x_i,s_i)$ in the sum is therefore 0 if and only if $x_i  s_i = 0$ as proven in a). Moreover each term in the sum is nonnegative so the sum is 0 if and only if every single term is 0. The equation $\Phi_\tau(x,y,s) = 0$ is therefore another way to write the central path conditions and fully equivalent. 
+	
+	\clearpage
+	
+	
+	\section{Termination of inner-point algorithm}
+	
+	Let x be feasible for the primal linear program:
+	\begin{equation}\label{eq:1}
+		\min c\tran x \quad \text{s.t.} \quad Ax = b
+	\end{equation}
+	And let $(y,s)$ be feasible for the dual linear program 
+	\begin{equation}\label{eq:2}
+		\max b\tran y \quad \text{s.t.} \quad A\tran y + s =c
+	\end{equation}
+	Such that
+	\begin{equation}\label{eq:3}
+		x\tran s \leq \epsilon \quad \text{for some } \epsilon >0
+	\end{equation}
+	We want to show two claims which are essentially symmmetrical. 
+	\begin{alignat}{2}
+		c\tran \bar x &\leq c\tran x &&\leq c\tran \bar x + \epsilon
+		\label{claim 41}\\[2ex] 
+		b\tran \bar y - \epsilon & \leq b\tran y &&\leq b\tran \bar y
+		\label{claim42}
+	\end{alignat}
+	Now the first inequality in \ref{claim 41} and the second \ref{claim42} are direct from weak duality. In both cases the actual meat of what we are trying to prove is :
+	\begin{align}
+	c\tran (x - \bar x) \leq x\tran s \leq \epsilon\\
+	b\tran (\bar y - y) \leq x\tran s \leq \epsilon
+	\end{align}
+	But:
+	\begin{align}
+		x\tran s&= x\tran (c- A\tran y)\\
+		&= c\tran x - (Ax)\tran y\\
+		&= c\tran x  - b\tran y
+	\end{align}
+	Hence
+	\begin{align}
+		c\tran (x - \bar x) \leq x\tran s \iff c\tran x - c\tran \bar x \leq c\tran x - b\tran y \iff c\tran \bar x \geq b\tran y\\
+		b\tran (\bar y - y) \leq x\tran s  \iff b\tran \bar y - b\tran y \leq c\tran x - b\tran y \iff c\tran x \geq b\tran \bar y
+	\end{align}
+	And so the second part of the claims is direct from weak duality. 
+	
+	
+\end{document}

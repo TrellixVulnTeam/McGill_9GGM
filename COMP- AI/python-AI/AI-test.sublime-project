@@ -1,0 +1,17 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+
+	"build_systems":
+[
+    {
+    "name": "Run Tests",
+    "working_dir": ".",
+    "cmd": ["$project_path/venv/Scripts/python", "-u", "$file"]
+    }
+]
+}

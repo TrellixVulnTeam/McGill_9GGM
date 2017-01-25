@@ -1,0 +1,143 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{comment}
+\usepackage[french]{isodate}
+
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{paracol}
+\usepackage{amsmath}
+\usepackage{ amssymb }
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{centernot}
+\usepackage{enumerate}
+\usepackage{mathtools,xparse}
+\usepackage{bm}
+
+
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+%Math typeset and settings
+\sisetup{output-decimal-marker = {,}}
+\newcommand*{\ft}[1]{_\mathrm{#1}} 
+\newcommand*{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}%transpose of matrix
+
+
+
+
+
+
+%Math shortcuts
+\newcommand{\vout}{v\ft{out}}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\textbf{Math350}\\
+			\text{Graph theory}\\
+			\vspace{0.5cm}
+			Homework IV
+			
+			\vspace{1.5cm}
+			
+			\textbf{Frédéric Boileau}\\
+			\vspace{2cm}
+			Prof. 
+			Jan Volec
+			\vfill
+			\today
+			\thispagestyle{empty}
+		\end{center}
+	\end{titlepage}
+	\newpage
+	\pdfbookmark{\contentsname}{Contents}
+	\tableofcontents
+	\thispagestyle{empty}
+	\clearpage
+	
+	\section*{1}
+	
+	We construct two graphs, $G$ and $F$ with the same vertex set such that the union of their edges gives us $K_8$. We want that $G$ has no subgraph isomorphic to $K_3$. Let $G' := C_8$ and label its edges in an ordered way $V(G') = \{v_1,v_2,\ldots,v_8\}$. Construct G the following way: 
+	\[G = G'  + \{v_1,v_5\} + \{v_2,v_6\}\]
+	Call the added edges $e$ and $f$ respectively. Now it is quite obvious that we can partition the graph $G'$ in two as it is a cycle of even length. So we have $\alpha(G') = 4$. The two vertex sets thus formed are the even and the odd numbered vertices. By adding the edges $e$ and $f$ we have made two vectors in each independent set adjacent, thus we have $\alpha(G) = 3$. \\
+	\underline{Claim} : $G$ has no triangle\\
+	\underline{Proof} : Assume there exists a subgraph $L$ of $G$ isomorphic to $K_3$. Clearly either $v_1,v_5 \in L$ or $v_2,v_6 \in L$ since those are the only two pairs of adjacent vertices with degree 3. However $\vert N(v_1) \cap N(v_5) \vert = \vert N(v_2) \cap N(v_6) \vert = 0$. Clearly $L \not \cong K_3$.\\
+	$\blacksquare$
+	The edges of our graph $G$ are our red coloring of $E(K_8)$.\\
+	Now let :
+	\[F = \overline{G}\]\\
+	\underline{Claim} : There exists no subgraph of $F$ isomorphic to $K_4$.\\
+	\underline{Proof} : We prove the claim by assuming there exists such a subgraph, we look at the different cases and for each derive a contradiction. We do so by reducing the set of possible vertices in $F$ such that we must have two consecutive vertices. They are obviously adjacent in $G$, so not in $F$, therefore they cannot be in a graph isomorphic to a complete graph. Let $S:= \{v_1,v_2,v_5,v_6\}$ 
+	\begin{enumerate}[(i)]
+		\item $\vert V(L) \cap V(S) \vert = 0$. Then we have $V(L) = \{v_3,v_4,v_7,v_8\}$ $\checkmark$
+		\item $\vert V(L) \cap V(S) \vert  = 1$ . We can assume WLOG (by obvious symmetry) that the vertex in this intersection is $v_1$. $N_F(G_1) - v_2 - v_6 - v_5 = \{v_7,v_3,v_4\}$ $\checkmark$
+	\end{enumerate}
+	Moreover there cannot be more than one vertex from $S$ in $L$ as we would have at least two non F-adjacent vertices in $L$ so there is no way $L$ could be isomorphic to $K_4$. \\
+	$\blacksquare$ \\
+	\clearpage
+	We just proved $R(3,4) > 8$ so we only have to show $R(3,4) \leq 9$ to prove equality. Let $G$ be a graph with $\abs{V(G)} = 9$. \\
+	\underline{Claim}: Either $\alpha(G) \geq 3$ or $\omega(G) \geq 4$.\\
+	\underline{Proof} : We already know that $R(3,3) = 6$. So whenever $G$ has a vertex with at least 6 neighbors the claim is true. Moreover we know that $R(2,4) = 4$ so that whenever $G$ has a vertex with at least 4 non neighbors the claim is true. We then only have to consider the following case: 
+	\begin{equation}
+		\forall \ v  \in G  \qquad 
+		\abs{N(v)} \geq 5 \qquad \text{and} \qquad \abs{G-N(v)} \leq 3
+	\end{equation}  
+	These are actually equalities since $N(v) \cup (G - N(v)) = G$, the order of both sets need to add up to 8. This means that $\deg (v) = 5$ for all $v\in G$. Hence $\sum_{v\in V(G)} \deg(v) = 45 = 2 \abs E $. This is a contradiction and so the proof is complete.\\
+	$\blacksquare$ \\[2ex]
+	\underline{Claim}: $R(4,4) \leq 18$\\
+	\underline{Proof} : We know from b) that $R(3,4) = 9$. Moreover Ramsey's theorem says that $R(s,t) \leq R(s-1,t) + R(s,t-1)$. Finally $R(3,4) = R(4,3)$ by obvious symmetry. Putting those 3 facts together proves the claim.\\
+	$\blacksquare$
+	
+	\clearpage
+	
+	\section*{3}
+	Let G be a 3-regular simple graph with no cut edge. \\
+	\underline{Claim}: For all edges in $G$ there exists a perfect matching that doesn't contain $e$.\\
+	\underline{Proof}: Consider $F = G - e$. Let $u$ and $v$ denote the endpoints of $e$. $G$ is connected by assumption. Moreover all the vertices except $u$ and $v$ have degree 3. 
+	
+	\clearpage
+	\section*{4}
+	
+	Let $G$ be a simple graph s.t. there exists no disjoint odd cycles. Let $\chi(G)$ denote the chromatic index of $G$. \\
+	\underline{Claim}: If $G$ is as specified above we have $\chi(G) \leq 5$\\
+	\underline{Lemma}: If a graph contains no odd cycle it is bipartite. Let $v_0 \in G$ be any vertex. Use two colors to color every vertex in the same component as $v_0$. Color them blue if they are at even distance from $v$ and red otherwise. Do the same for every component. No edge can have both endpoints in different colors as this would create an odd cycle. Hence the coloring is a partition in two.\\
+	\underline{Proof}: If there are no disjoint cycles of odd length there is at least one $v \in G$ such that it is in every cycle of odd length. This means that $G - v$ has no cycle of odd length. Let $C$ be any cycle in $G$ of odd length. We now have two facts:
+	\begin{enumerate}
+		\item $\chi(G-C) \leq 2$ since this graph is bipartite\\
+		\item $\chi(C) = 3$, this is a well known fact.
+	\end{enumerate}
+	We can thus find a 3-coloring of $C$ and a 2-coloring of $G-C$. Those two coloring together (assuming we took different colors in both cases, quite obviously) form a coloring $G$ with at most 5 colors.\\
+	$\blacksquare$ 
+	
+	\clearpage
+	
+	\section*{5}
+	
+	Let $G$ be a triangle free simple graph with $n$ vertices. Let $\alpha(G)$ denote the size of a maximum independent set in G.\\
+	\underline{Claim}: 
+	$\alpha(G) \geq \floor{\sqrt{n}}$\\
+	\underline{Proof}: We can assume that there exists no vertex, call it $v$, with degree higher than $\floor{\sqrt{n}}$ (i.e. $\Delta G \geq \sqrt{n} - 1 $). If there were such a vertex the independent set of the required size is the set of neighbors of $v$. They have to be independent otherwise this would form a triangle. A small lemma with this bound on the maximum degree completes the proof.\\
+	\underline{Lemma}: 
+	\begin{equation}\label{last}
+		\alpha(G) \geq \frac{\abs{V(G)}}{\Delta G +1}
+	\end{equation}
+	To see this apply the following greedy algorithm. Start with an empty set $S$. Pick a vertex, put $S$ and remove its neighbors from $G$. We thus remove at most $\Delta G + 1$ vertices from $G$ at each iteration. The number of times we can iterate this algorithm is the RHS of \ref{last} and the resulting set $S$ is clearly independent. Substituting the bound on $\Delta G$ in the lower bound $\alpha$ completes the proof.
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+\end{document}

@@ -1,0 +1,4 @@
+\contentsline {section}{\numberline {1}Some linear algebra}{2}{section.1}
+\contentsline {section}{\numberline {2}Symmetric matrices, quadratic functions and infima}{3}{section.2}
+\contentsline {section}{\numberline {3}Convexity preserving operations}{4}{section.3}
+\contentsline {section}{\numberline {4}Minimizing function over the unit ball}{4}{section.4}
